@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 로그 - 책 등록/수정</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .rating-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .rating-group input[type="radio"] {
+            width: auto;
+        }
+        
+        .rating-group label {
+            display: inline;
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${book.id != null} ? '책 수정' : '새 책 등록'">책 등록/수정</h1>
+        
+        <form th:action="@{/books}" th:object="${book}" method="post">
+            <input type="hidden" th:field="*{id}">
+            
+            <div class="form-group">
+                <label for="title">제목 *</label>
+                <input type="text" id="title" th:field="*{title}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="author">저자</label>
+                <input type="text" id="author" th:field="*{author}">
+            </div>
+            
+            <div class="form-group">
+                <label for="publisher">출판사</label>
+                <input type="text" id="publisher" th:field="*{publisher}">
+            </div>
+            
+            <div class="form-group">
+                <label for="genre">장르</label>
+                <select id="genre" th:field="*{genre}">
+                    <option value="">선택하세요</option>
+                    <option value="소설">소설</option>
+                    <option value="에세이">에세이</option>
+                    <option value="시">시</option>
+                    <option value="자기계발">자기계발</option>
+                    <option value="경제/경영">경제/경영</option>
+                    <option value="인문">인문</option>
+                    <option value="역사">역사</option>
+                    <option value="과학">과학</option>
+                    <option value="IT/컴퓨터">IT/컴퓨터</option>
+                    <option value="기타">기타</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>평점 *</label>
+                <div class="rating-group">
+                    <input type="radio" id="rating1" th:field="*{rating}" value="1" required>
+                    <label for="rating1">⭐</label>
+                    
+                    <input type="radio" id="rating2" th:field="*{rating}" value="2">
+                    <label for="rating2">⭐⭐</label>
+                    
+                    <input type="radio" id="rating3" th:field="*{rating}" value="3">
+                    <label for="rating3">⭐⭐⭐</label>
+                    
+                    <input type="radio" id="rating4" th:field="*{rating}" value="4">
+                    <label for="rating4">⭐⭐⭐⭐</label>
+                    
+                    <input type="radio" id="rating5" th:field="*{rating}" value="5">
+                    <label for="rating5">⭐⭐⭐⭐⭐</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="readDate">읽은 날짜</label>
+                <input type="date" id="readDate" th:field="*{readDate}">
+            </div>
+            
+            <div class="form-group">
+                <label for="review">감상평</label>
+                <textarea id="review" th:field="*{review}" 
+                          placeholder="이 책을 읽고 느낀 점을 자유롭게 작성해주세요..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${book.id != null} ? '수정하기' : '등록하기'">등록하기</span>
+                </button>
+                <a href="/books" class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
