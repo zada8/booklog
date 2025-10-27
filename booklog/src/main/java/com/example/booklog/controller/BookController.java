@@ -2,6 +2,9 @@ package com.example.booklog.controller;
 
 import com.example.booklog.entity.Book;
 import com.example.booklog.service.BookService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/books")
 public class BookController {
+	
+	// 검색 기능
+	@GetMapping("/search")
+	public String searchBooks(@RequestParam String keyword, Model model) {
+	    List<Book> books = bookService.searchBooks(keyword);
+	    model.addAttribute("books", books);
+	    model.addAttribute("keyword", keyword);
+	    return "books/list";
+	}
     
     @Autowired
     private BookService bookService;
@@ -59,4 +71,7 @@ public class BookController {
         bookService.deleteBook(id);
         return "redirect:/books";
     }
+    
+    
 }
+

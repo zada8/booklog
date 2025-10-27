@@ -27,4 +27,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     
     // 최근 등록순으로 가져오기
     List<Book> findAllByOrderByCreatedAtDesc();
+    
+ // 저자로 검색 (포함)
+    List<Book> findByAuthorContaining(String author);
+
+    // 출판사로 검색 (포함)
+    //List<Book> findByPublisherContaining(String publisher);
 }

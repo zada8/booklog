@@ -4,8 +4,11 @@ import com.example.booklog.entity.Book;
 import com.example.booklog.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -50,5 +53,21 @@ public class BookService {
     
     public List<Book> findByPublisher(String publisher) {
         return bookRepository.findByPublisherContaining(publisher);
+    }
+    
+ // 통합 검색
+    public List<Book> searchBooks(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllBooks();
+        }
+        
+        // 제목, 저자, 출판사에서 검색
+        List<Book> results = new ArrayList<>();
+        results.addAll(bookRepository.findByTitleContaining(keyword));
+        results.addAll(bookRepository.findByAuthorContaining(keyword));
+        results.addAll(bookRepository.findByPublisherContaining(keyword));
+        
+        // 중복 제거
+        return results.stream().distinct().collect(Collectors.toList());
     }
 }

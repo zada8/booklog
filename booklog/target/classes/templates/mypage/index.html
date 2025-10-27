@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - 도서 로그</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 32px;
+            font-size: 32px;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            width: 100px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            color: #1a1a1a;
+            font-size: 15px;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .menu-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid transparent;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #e0e0e0;
+        }
+        
+        .menu-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+        
+        .menu-card h3 {
+            margin-bottom: 8px;
+            font-size: 18px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .menu-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container">
+        <h1>마이페이지</h1>
+        
+        <div class="user-info">
+            <div class="info-row">
+                <div class="info-label">아이디</div>
+                <div class="info-value" sec:authentication="name">username</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">권한</div>
+                <div class="info-value" sec:authentication="authorities">ROLE_USER</div>
+            </div>
+        </div>
+        
+        <div class="menu-grid">
+            <a href="/books" class="menu-card">
+                <div class="menu-icon">📚</div>
+                <h3>내 도서 목록</h3>
+                <p>등록한 책들을 확인하세요</p>
+            </a>
+            
+            <a href="/books/new" class="menu-card">
+                <div class="menu-icon">➕</div>
+                <h3>새 책 등록</h3>
+                <p>읽은 책을 기록하세요</p>
+            </a>
+            
+            <a href="/books" class="menu-card">
+                <div class="menu-icon">📊</div>
+                <h3>독서 통계</h3>
+                <p>나의 독서 현황을 확인하세요</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
