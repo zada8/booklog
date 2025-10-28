@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
 </head>
@@ -18,12 +18,17 @@
                 </div>
                 
                 <div class="nav-menu">
-                    <div sec:authorize="!isAuthenticated()">
-                        <a href="/auth/login" class="nav-btn">로그인</a>
+                    <!-- 로그인 안 된 경우만 표시 -->
+                    <div sec:authorize="isAnonymous()">
+                        <a href="/auth/login" class="nav-btn nav-btn-secondary">로그인</a>
+                        <a href="/auth/register" class="nav-btn nav-btn-primary">회원가입</a>
                     </div>
                     
+                    <!-- 로그인 된 경우만 표시 -->
                     <div sec:authorize="isAuthenticated()" class="nav-user">
-                        <span class="nav-username" sec:authentication="name">사용자</span>
+                        <span class="nav-username">
+                            <span sec:authentication="name">사용자</span>님
+                        </span>
                         <a href="/mypage" class="nav-link">마이페이지</a>
                         <a href="/auth/logout" class="nav-link">로그아웃</a>
                     </div>
@@ -104,6 +109,13 @@
                 align-items: center;
                 gap: 12px;
                 white-space: nowrap;
+                margin-left: auto;
+            }
+            
+            .nav-menu > div {
+                display: flex;
+                align-items: center;
+                gap: 12px;
             }
             
             .nav-user {
@@ -136,19 +148,35 @@
             }
             
             .nav-btn {
-                color: #1a1a1a;
-                background: white;
                 text-decoration: none;
                 padding: 8px 16px;
                 border-radius: 8px;
                 font-size: 14px;
                 font-weight: 500;
-                border: 1px solid #e0e0e0;
                 transition: all 0.2s;
+                border: 1px solid #e0e0e0;
             }
             
-            .nav-btn:hover {
+            /* 로그인 버튼 (화이트) */
+            .nav-btn-secondary {
+                color: #1a1a1a;
+                background: white;
+            }
+            
+            .nav-btn-secondary:hover {
                 border-color: #1a1a1a;
+                transform: translateY(-1px);
+            }
+            
+            /* 회원가입 버튼 (블랙) */
+            .nav-btn-primary {
+                color: white;
+                background: #1a1a1a;
+                border-color: #1a1a1a;
+            }
+            
+            .nav-btn-primary:hover {
+                background: #333;
                 transform: translateY(-1px);
             }
             

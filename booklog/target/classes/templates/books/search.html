@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>책 검색 - 도서 로그</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 32px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .search-box {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 32px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .search-input:focus {
+            border-color: #1a1a1a;
+        }
+        
+        .search-btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .search-btn:hover {
+            background: #333;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+        
+        .results {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .result-count {
+            margin-bottom: 16px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .book-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .book-cover {
+            width: 80px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #f0f0f0;
+            flex-shrink: 0;
+        }
+        
+        .book-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .book-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .book-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .book-publisher {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .help-text {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+            
+            .search-box {
+                padding: 20px;
+            }
+            
+            .book-cover {
+                width: 60px;
+                height: 85px;
+            }
+            
+            .book-item {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container">
+        <a href="/books" class="back-link">← 목록으로 돌아가기</a>
+        
+        <h1>책 검색하기</h1>
+        
+        <div class="search-box">
+            <form class="search-form" th:action="@{/books/search-api}" method="get">
+                <input type="text" 
+                       name="query" 
+                       class="search-input" 
+                       th:value="${query}"
+                       placeholder="책 제목 또는 저자를 입력하세요..."
+                       required 
+                       autofocus>
+                <button type="submit" class="search-btn">검색</button>
+            </form>
+            <div class="help-text">
+                예: "채식주의자", "한강", "해리포터" 등
+            </div>
+        </div>
+        
+        <!-- 검색 결과 -->
+        <div th:if="${books != null}">
+            <div class="result-count" th:if="${!books.isEmpty()}">
+                검색 결과 <strong th:text="${books.size()}">0</strong>건
+            </div>
+            
+            <div class="results">
+                <div th:if="${books.isEmpty()}" class="empty-message">
+                    "<span th:text="${query}"></span>"에 대한 검색 결과가 없습니다.<br>
+                    다른 검색어로 시도해보세요.
+                </div>
+                
+                <a th:each="book : ${books}" 
+                   th:href="@{/books/new-from-api(isbn=${book.isbn})}"
+                   class="book-item">
+                    <img th:if="${book.coverUrl != null}" 
+                         th:src="${book.coverUrl}" 
+                         th:alt="${book.title}"
+                         class="book-cover">
+                    <div th:if="${book.coverUrl == null}" 
+                         class="book-cover"
+                         style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">
+                        표지없음
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title" th:text="${book.title}">책 제목</div>
+                        <div class="book-meta">
+                            <span th:text="${book.author}">저자</span>
+                        </div>
+                        <div class="book-publisher">
+                            <span th:text="${book.publisher}">출판사</span>
+                            <span th:if="${book.publishDate != null && !book.publishDate.isEmpty()}" 
+                                  th:text="' | ' + ${book.publishDate}"></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

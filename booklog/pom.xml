@@ -63,12 +63,31 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		
+		<!-- Thymeleaf Spring Security 통합 -->
+    	<dependency>
+        	<groupId>org.thymeleaf.extras</groupId>
+        	<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+    	</dependency>
 
 		<!-- Password 암호화 -->
 		<dependency>
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-crypto</artifactId>
 		</dependency>
+		
+		<!-- JSON 처리를 위한 라이브러리 -->
+		<dependency>
+    		<groupId>org.json</groupId>
+    		<artifactId>json</artifactId>
+    		<version>20230227</version>
+		</dependency>
+    	<!-- XML 파싱을 위한 Jackson Dataformat XML -->
+    	<dependency>
+       	 	<groupId>com.fasterxml.jackson.dataformat</groupId>
+        	<artifactId>jackson-dataformat-xml</artifactId>
+    	</dependency>
+    
 	</dependencies>
 
 	<build>
