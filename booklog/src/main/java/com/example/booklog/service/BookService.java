@@ -61,7 +61,7 @@ public class BookService {
         return bookRepository.findByPublisherContaining(publisher);
     }
     
- // 통합 검색
+    // 통합 검색
     public List<Book> searchBooks(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllBooks();
@@ -75,5 +75,10 @@ public class BookService {
         
         // 중복 제거
         return results.stream().distinct().collect(Collectors.toList());
+    }
+    
+    // 사용자 + 상태별 책 조회
+    public List<Book> getBooksByUserAndStatus(User user, String status) {
+        return bookRepository.findByUserAndStatusOrderByCreatedAtDesc(user, status);
     }
 }

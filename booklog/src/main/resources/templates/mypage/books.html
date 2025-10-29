@@ -38,6 +38,51 @@
             font-size: 16px;
         }
         
+        /* 상태 탭 */
+        .status-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            border-bottom: 2px solid #f5f5f5;
+            padding-bottom: 0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            text-decoration: none;
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+        
+        .tab.active {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .tab.active.want {
+            border-bottom-color: #ff9800;
+            color: #e65100;
+        }
+        
+        .tab.active.reading {
+            border-bottom-color: #2196f3;
+            color: #1565c0;
+        }
+        
+        .tab.active.read {
+            border-bottom-color: #4caf50;
+            color: #2e7d32;
+        }
+        
         .stats {
             display: flex;
             gap: 20px;
@@ -143,6 +188,30 @@
             font-size: 16px;
         }
         
+        /* 상태 뱃지 */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-want {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .status-reading {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .status-read {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
         .actions {
             display: flex;
             gap: 6px;
@@ -181,6 +250,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
     </style>
+    
 </head>
 <body>
     <div th:replace="~{fragments/header :: header}"></div>
@@ -189,6 +259,22 @@
         <div class="page-header">
             <h1>내 도서 목록</h1>
             <p class="subtitle"><span th:text="${user.name}">사용자</span>님의 도서 목록</p>
+        </div>
+        
+        <!-- 상태 탭 -->
+        <div class="status-tabs">
+            <a th:href="@{/mypage/books(status='WANT_TO_READ')}" 
+               th:class="${selectedStatus == 'WANT_TO_READ' ? 'tab active want' : 'tab'}">
+                읽고 싶은 책
+            </a>
+            <a th:href="@{/mypage/books(status='READING')}" 
+               th:class="${selectedStatus == 'READING' ? 'tab active reading' : 'tab'}">
+                읽고 있는 책
+            </a>
+            <a th:href="@{/mypage/books(status='READ')}" 
+               th:class="${selectedStatus == 'READ' ? 'tab active read' : 'tab'}">
+                읽은 책
+            </a>
         </div>
         
         <!-- 통계 -->
@@ -229,8 +315,8 @@
                     <th>저자</th>
                     <th>출판사</th>
                     <th>장르</th>
-                    <th>평점</th>
-                    <th>읽은 날짜</th>
+                    <th th:if="${selectedStatus == 'READ'}">평점</th>
+                    <th th:if="${selectedStatus == 'READ'}">읽은 날짜</th>
                     <th>관리</th>
                 </tr>
             </thead>
@@ -239,11 +325,15 @@
                     <td th:text="${book.title}">책 제목</td>
                     <td th:text="${book.author}">저자</td>
                     <td th:text="${book.publisher}">출판사</td>
-                    <td th:text="${book.genre}">장르</td>
+                    <!-- <td th:text="${book.genre}">장르</td> -->
                     <td>
+                        <span th:class="'status-badge status-' + ${book.status.toLowerCase().replace('_', '-')}"
+                              th:text="${book.statusName}">상태</span>
+                    </td>
+                    <td th:if="${selectedStatus == 'READ'}">
                         <span class="rating" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
                     </td>
-                    <td th:text="${book.readDate}">2024-01-01</td>
+                    <td th:if="${selectedStatus == 'READ'}" th:text="${book.readDate}">2024-01-01</td>
                     <td class="actions">
                         <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-info">상세</a>
                         <a th:href="@{/books/{id}/edit(id=${book.id})}" class="btn btn-warning">수정</a>

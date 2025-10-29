@@ -12,7 +12,6 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false)
     private String title;
     
     private String author;
@@ -28,6 +27,11 @@ public class Book {
     private String review;
     
     private LocalDate readDate;
+    
+    //독서 상태
+    @Column(nullable = false)
+    private String status = "WANT_TO_READ"; // READ, READING, WANT_TO_READ
+
     
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -133,5 +137,23 @@ public class Book {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
+    //상태 한글명 반환
+    public String getStatusName() {
+        switch (status) {
+            case "READ": return "읽은 책";
+            case "READING": return "읽고 있는 책";
+            case "WANT_TO_READ": return "읽고 싶은 책";
+            default: return status;
+        }
     }
 }

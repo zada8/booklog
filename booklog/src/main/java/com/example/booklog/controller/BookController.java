@@ -40,27 +40,6 @@ public class BookController {
     @Autowired
     private NationalLibraryApiService nlApiService;
     
-    //임시 (기존 책 데이터 수정용)
-    /*
-    @GetMapping("/fix-books")
-    public String fixBooks(Authentication authentication, RedirectAttributes redirectAttributes) {
-        User currentUser = userService.findByUsername(authentication.getName());
-        
-        List<Book> allBooks = bookService.getAllBooks();
-        int fixedCount = 0;
-        
-        for (Book book : allBooks) {
-            if (book.getUser() == null) {
-                book.setUser(currentUser);
-                bookService.saveBook(book);
-                fixedCount++;
-            }
-        }
-        
-        redirectAttributes.addFlashAttribute("message", fixedCount + "권의 책에 소유자를 할당했습니다.");
-        return "redirect:/books";
-    }
-    */
     // 책 목록
     @GetMapping
     public String list(Model model, Authentication authentication) {
@@ -85,14 +64,16 @@ public class BookController {
         return "books/list";
     }
     
+    /*
     // 새 책 등록 폼
     @GetMapping("/new")
     public String newBookForm(Model model) {
         model.addAttribute("book", new Book());
         return "books/form";
     }
+    */
     
-    // 책 등록/수정 처리
+ // 책 등록/수정 처리
     @PostMapping
     public String saveBook(@ModelAttribute Book book, 
                           Authentication authentication,
@@ -102,6 +83,17 @@ public class BookController {
         if (book.getId() == null) {
             User user = userService.findByUsername(authentication.getName());
             book.setUser(user);
+            
+            // status 기본값 설정
+            if (book.getStatus() == null || book.getStatus().isEmpty()) {
+                book.setStatus("WANT_TO_READ");
+            }
+            
+            // rating 기본값 설정
+            if (book.getRating() == null) {
+                book.setRating(3);
+            }
+            
             bookService.saveBook(book);
         } 
         // 기존 책 수정
@@ -114,7 +106,11 @@ public class BookController {
                 return "redirect:/books";
             }
             
-            // 기존 User 유지하면서 나머지만 업데이트
+            // status 유지
+            if (book.getStatus() == null || book.getStatus().isEmpty()) {
+                book.setStatus(existingBook.getStatus());
+            }
+            
             book.setUser(existingBook.getUser());
             bookService.saveBook(book);
         }
@@ -191,7 +187,9 @@ public class BookController {
     
     // API에서 선택한 책으로 등록 폼 이동
     @GetMapping("/new-from-api")
-    public String newBookFromApi(@RequestParam String isbn, Model model) {
+    public String newBookFromApi(@RequestParam String isbn, 
+    		 					@RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
+    		 					Model model) {
         BookApiDto apiBook = kakaoApiService.getBookByIsbn(isbn);
         
         Book book = new Book();
@@ -200,6 +198,7 @@ public class BookController {
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
         }
+        book.setStatus(status);
         
         model.addAttribute("book", book);
         model.addAttribute("fromApi", true);

@@ -191,8 +191,22 @@
                         <option value="기타">기타</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
+
+				<!-- 상태 선택 추가 -->
+				<div class="form-group">
+					<label for="status">독서 상태 *</label> <select id="status"
+						name="status" required>
+						<option value="WANT_TO_READ"
+							th:selected="${book.status == 'WANT_TO_READ'}">읽고 싶은 책
+						</option>
+						<option value="READING" th:selected="${book.status == 'READING'}">
+							읽고 있는 책</option>
+						<option value="READ" th:selected="${book.status == 'READ'}">
+							읽은 책</option>
+					</select>
+				</div>
+
+				<div class="form-group">
                     <label>평점 *</label>
                     <div class="rating-group">
                         <div class="rating-option">

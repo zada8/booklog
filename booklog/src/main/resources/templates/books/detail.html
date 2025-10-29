@@ -162,6 +162,29 @@
                 width: 100%;
             }
         }
+        
+		.status-badge {
+		    padding: 6px 16px;
+		    border-radius: 6px;
+		    font-size: 13px;
+		    font-weight: 600;
+		    display: inline-block;
+		}
+		
+		.status-want-to-read {
+		    background: #fff3e0;
+		    color: #e65100;
+		}
+		
+		.status-reading {
+		    background: #e3f2fd;
+		    color: #1565c0;
+		}
+		
+		.status-read {
+		    background: #e8f5e9;
+		    color: #2e7d32;
+		}
     </style>
 </head>
 <body>
@@ -181,8 +204,15 @@
                     <div class="info-label">출판사</div>
                     <div class="info-value" th:text="${book.publisher}">출판사명</div>
                 </div>
-                
-                <div class="info-row">
+
+				<div class="info-row">
+					<span class="label">상태</span> <span class="value"> <span
+						th:class="'status-badge status-' + ${book.status.toLowerCase().replace('_', '-')}"
+						th:text="${book.statusName}">상태</span>
+					</span>
+				</div>
+
+				<div class="info-row">
                     <div class="info-label">장르</div>
                     <div class="info-value" th:text="${book.genre}">장르</div>
                 </div>

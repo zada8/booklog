@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -29,13 +30,36 @@ public class MyPageController {
         return "mypage/index";
     }
     
-    //추가: 내 도서 목록
+    // 내 도서 목록
     @GetMapping("/books")
-    public String myBooks(Model model, Authentication authentication) {
+    public String myBooks(@RequestParam(required = false) String status,
+                         Model model, 
+                         Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
         
-        // 내가 등록한 책만 가져오기
-        List<Book> myBooks = bookService.getBooksByUser(user);
+        List<Book> myBooks;
+        String statusName;
+        
+        //  상태별 필터링
+        if (status != null && !status.isEmpty()) {
+            myBooks = bookService.getBooksByUserAndStatus(user, status);
+            switch (status) {
+                case "READ":
+                    statusName = "읽은 책";
+                    break;
+                case "READING":
+                    statusName = "읽고 있는 책";
+                    break;
+                case "WANT_TO_READ":
+                    statusName = "읽고 싶은 책";
+                    break;
+                default:
+                    statusName = "전체";
+            }
+        } else {
+            myBooks = bookService.getBooksByUser(user);
+            statusName = "전체";
+        }
         
         // 평균 평점 계산
         double averageRating = 0.0;
@@ -50,6 +74,8 @@ public class MyPageController {
         model.addAttribute("user", user);
         model.addAttribute("currentUsername", authentication.getName());
         model.addAttribute("averageRating", averageRating);
+        model.addAttribute("statusName", statusName);
+        model.addAttribute("selectedStatus", status);
         
         return "mypage/books";
     }

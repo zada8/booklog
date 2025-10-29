@@ -185,7 +185,53 @@
                 padding: 16px;
             }
         }
+        
+        .btn-status {
+		    display: inline-block;
+		    padding: 12px 20px;
+		    text-decoration: none;
+		    border-radius: 8px;
+		    font-size: 14px;
+		    font-weight: 500;
+		    transition: all 0.2s;
+		    border: 2px solid;
+		}
+		
+		.btn-status-want {
+		    background: #fff3e0;
+		    color: #e65100;
+		    border-color: #ffb74d;
+		}
+		
+		.btn-status-want:hover {
+		    background: #ffe0b2;
+		    transform: translateY(-1px);
+		}
+		
+		.btn-status-reading {
+		    background: #e3f2fd;
+		    color: #1565c0;
+		    border-color: #64b5f6;
+		}
+		
+		.btn-status-reading:hover {
+		    background: #bbdefb;
+		    transform: translateY(-1px);
+		}
+		
+		.btn-status-read {
+		    background: #e8f5e9;
+		    color: #2e7d32;
+		    border-color: #81c784;
+		}
+		
+		.btn-status-read:hover {
+		    background: #c8e6c9;
+		    transform: translateY(-1px);
+		}
+
     </style>
+    
 </head>
 <body>
     <div th:replace="~{fragments/header :: header}"></div>
@@ -206,9 +252,11 @@
                        autofocus>
                 <button type="submit" class="search-btn">검색</button>
             </form>
+            <!-- 
             <div class="help-text">
                 예: "채식주의자", "한강", "해리포터" 등
             </div>
+            -->
         </div>
         
         <!-- 검색 결과 -->
@@ -245,8 +293,47 @@
                             <span th:if="${book.publishDate != null && !book.publishDate.isEmpty()}" 
                                   th:text="' | ' + ${book.publishDate}"></span>
                         </div>
-                    </div>
-                </a>
+                    </div> 
+                    
+                    <!-- 펼쳐지는 상세 정보 -->
+					<div class="book-details" th:id="'details-' + ${iterStat.index}">
+						<div class="book-details-content">
+							<div class="detail-row"
+								th:if="${book.isbn != null && !book.isbn.isEmpty()}">
+								<div class="detail-label">ISBN</div>
+								<div class="detail-value" th:text="${book.isbn}">ISBN</div>
+							</div>
+							<div class="detail-row"
+								th:if="${book.description != null && !book.description.isEmpty()}">
+								<div class="detail-label">소개</div>
+								<div class="detail-value" th:text="${book.description}">책
+									소개</div>
+							</div>
+							<div class="detail-row"
+								th:if="${book.publishDate != null && !book.publishDate.isEmpty()}">
+								<div class="detail-label">출간일</div>
+								<div class="detail-value" th:text="${book.publishDate}">출간일</div>
+							</div>
+
+							<!--  선택 버튼 -->
+							<div style="margin-top: 24px;">
+								<div
+									style="font-weight: 500; color: #666; font-size: 14px; margin-bottom: 12px;">
+									책 상태를 선택하세요
+								</div>
+								<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+									<a
+										th:href="@{/books/new-from-api(isbn=${book.isbn}, status='WANT_TO_READ')}"
+										class="btn-status btn-status-want"> 읽고 싶은 책 </a> <a
+										th:href="@{/books/new-from-api(isbn=${book.isbn}, status='READING')}"
+										class="btn-status btn-status-reading"> 읽고 있는 책 </a> <a
+										th:href="@{/books/new-from-api(isbn=${book.isbn}, status='READ')}"
+										class="btn-status btn-status-read"> 읽은 책 </a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</a>
             </div>
         </div>
     </div>

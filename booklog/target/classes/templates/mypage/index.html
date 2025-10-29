@@ -73,13 +73,37 @@
             text-decoration: none;
             transition: all 0.2s;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            border: 1px solid transparent;
+            border: 2px solid transparent;
         }
         
         .menu-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-color: #e0e0e0;
+        }
+        
+        /* 상태별 색상 */
+        .menu-card.want {
+            border-color: #ffb74d;
+        }
+        
+        .menu-card.want:hover {
+            background: #fff3e0;
+        }
+        
+        .menu-card.reading {
+            border-color: #64b5f6;
+        }
+        
+        .menu-card.reading:hover {
+            background: #e3f2fd;
+        }
+        
+        .menu-card.read {
+            border-color: #81c784;
+        }
+        
+        .menu-card.read:hover {
+            background: #e8f5e9;
         }
         
         .menu-icon {
@@ -132,23 +156,21 @@
             </div>
         </div>
         
+        <!-- 상태별 메뉴 -->
         <div class="menu-grid">
-            <a href="/mypage/books" class="menu-card">
-                <!--<div class="menu-icon">📚</div>  -->
-                <h3>내 도서 목록</h3>
-                <p>등록한 책들을 확인하세요</p>
+            <a href="/mypage/books?status=WANT_TO_READ" class="menu-card want">
+                <h3>읽고 싶은 책</h3>
+                <p>읽고 싶은 책 목록</p>
             </a>
             
-            <a href="/books/new" class="menu-card">
-                <!-- <div class="menu-icon">➕</div> -->
-                <h3>새 책 등록</h3>
-                <p>읽은 책을 기록하세요</p>
+            <a href="/mypage/books?status=READING" class="menu-card reading">
+                <h3>읽고 있는 책</h3>
+                <p>현재 읽고 있는 책 목록</p>
             </a>
             
-            <a href="/mypage/stats" class="menu-card">
-                <!-- <div class="menu-icon">📊</div> -->
-                <h3>독서 통계</h3>
-                <p>나의 독서 현황을 확인하세요</p>
+            <a href="/mypage/books?status=READ" class="menu-card read">
+                <h3>읽은 책</h3>
+                <p>완독한 책 목록</p>
             </a>
         </div>
     </div>
