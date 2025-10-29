@@ -201,17 +201,19 @@
             color: #666;
         }
         
-        .recommended-books {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-        }
+		.recommended-books {
+		    display: grid;
+		    grid-template-columns: repeat(5, 1fr);  /* 5개 균등 배치 */
+		    gap: 20px;
+		}
         
         .recommended-book {
             text-decoration: none;
             color: inherit;
             transition: transform 0.2s;
             display: block;
+            width: 100%;
+            max-width: 160px;
         }
         
         .recommended-book:hover {
@@ -257,12 +259,40 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             line-height: 1.4;
+            word-break: keep-all;
+            min-height: 40px;
         }
         
         .recommended-book-author {
             font-size: 12px;
             color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+        
+        /* 반응형 */
+@media (max-width: 768px) {
+    .recommended-section {
+        padding: 20px;
+    }
+    
+    .recommended-books {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 16px;
+    }
+    
+    .recommended-book {
+        max-width: 140px;  /*모바일에서 최대 너비 */
+    }
+}
+
+/* 큰 화면에서 중앙 정렬 */
+@media (min-width: 1200px) {
+    .recommended-books {
+        justify-content: center;  /* 추가: 큰 화면에서 중앙 */
+    }
+}
                
     </style>
 </head>
@@ -272,33 +302,32 @@
     <div class="container">
         <h1>나의 도서 로그</h1>
         
-        <!-- 사서 추천 도서 섹션 추가 -->
-        <div class="recommended-section" th:if="${recommendedBooks != null && !recommendedBooks.isEmpty()}">
-            <div class="recommended-header">
-                <div>
-                    <h2 class="recommended-title">국립중앙도서관 사서 추천 도서</h2>
-                    <p class="recommended-subtitle">전문 사서가 엄선한 이달의 추천 도서</p>
+<!-- 사서 추천 도서 섹션 -->
+<div class="recommended-section" th:if="${recommendedBooks != null && !recommendedBooks.isEmpty()}">
+    <div class="recommended-header">
+        <h2 class="recommended-title">국립중앙도서관 사서 추천 도서</h2>
+        <p class="recommended-subtitle">전문 사서가 엄선한 이달의 추천 도서</p>
+    </div>
+    
+    <div class="recommended-books">
+        <a th:each="book : ${recommendedBooks}" 
+           th:href="@{/books/new-from-recommend(isbn=${book.isbn})}"
+           class="recommended-book">
+            <!-- recommended-cover-wrapper 추가 -->
+            <div class="recommended-cover-wrapper">
+                <img th:if="${book.coverUrl != null}" 
+                     th:src="${book.coverUrl}" 
+                     th:alt="${book.title}"
+                     class="recommended-cover">
+                <div th:if="${book.coverUrl == null}" class="no-cover">
+                    표지없음
                 </div>
             </div>
-            
-            <div class="recommended-books">
-                <a th:each="book : ${recommendedBooks}" 
-                   th:href="@{/books/new-from-recommend(isbn=${book.isbn})}"
-                   class="recommended-book">
-                    <img th:if="${book.coverUrl != null}" 
-                         th:src="${book.coverUrl}" 
-                         th:alt="${book.title}"
-                         class="recommended-cover">
-                    <div th:if="${book.coverUrl == null}" 
-                         class="recommended-cover"
-                         style="display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                         표지없음
-                    </div>
-                    <div class="recommended-book-title" th:text="${book.title}">책 제목</div>
-                    <div class="recommended-book-author" th:text="${book.author}">저자</div>
-                </a>
-            </div>
-        </div>
+            <div class="recommended-book-title" th:text="${book.title}">책 제목</div>
+            <div class="recommended-book-author" th:text="${book.author}">저자</div>
+        </a>
+    </div>
+</div>
         
                 
         <div class="header-actions">

@@ -31,17 +31,14 @@ public class KakaoBookApiService {
             System.out.println("=== 카카오 책 검색 시작 ===");
             System.out.println("검색어: " + query);
             
-            // ✅ API 키 확인
+            // API 키 확인
             System.out.println("API URL: " + apiUrl);
             System.out.println("API KEY 길이: " + (apiKey != null ? apiKey.length() : "null"));
             System.out.println("API KEY 앞 10자: " + (apiKey != null && apiKey.length() >= 10 ? apiKey.substring(0, 10) + "..." : apiKey));
             
             
-            // URL 인코딩
-            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-            
             // API 요청 URL
-            String url = apiUrl + "?query=" + encodedQuery + "&size=20";
+            String url = apiUrl + "?query=" + query;
             
             System.out.println("요청 URL: " + url);
             
