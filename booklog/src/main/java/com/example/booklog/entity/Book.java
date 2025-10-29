@@ -34,6 +34,10 @@ public class Book {
     
     private LocalDateTime updatedAt;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    
     // 생성 시 자동으로 현재 시간 저장
     @PrePersist
     protected void onCreate() {
@@ -121,5 +125,13 @@ public class Book {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+    
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

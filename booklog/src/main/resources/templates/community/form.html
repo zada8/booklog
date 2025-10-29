@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${post.id != null ? '게시글 수정' : '글쓰기'} + ' - 도서 로그'">글쓰기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+        
+        textarea {
+            min-height: 300px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #1a1a1a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #333;
+        }
+        
+        .btn-secondary {
+            background-color: white;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #1a1a1a;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container">
+        <h1 th:text="${post.id != null ? '게시글 수정' : '글쓰기'}">글쓰기</h1>
+        
+        <form th:action="@{/community}" method="post" class="form-container">
+            <input type="hidden" th:field="${post.id}">
+            
+            <div class="form-group">
+                <label for="category">카테고리 *</label>
+                <select id="category" th:field="${post.category}" required>
+                    <option value="">카테고리를 선택하세요</option>
+                    <option value="FREE">자유게시판</option>
+                    <option value="REVIEW">책 리뷰</option>
+                    <option value="RECOMMEND">책 추천 요청</option>
+                    <option value="CLUB">독서 모임</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="title">제목 *</label>
+                <input type="text" 
+                       id="title" 
+                       th:field="${post.title}"
+                       placeholder="제목을 입력하세요"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="content">내용 *</label>
+                <textarea id="content" 
+                          th:field="${post.content}"
+                          placeholder="내용을 입력하세요"
+                          required></textarea>
+            </div>
+            
+            <div class="button-group">
+                <a href="/community" class="btn btn-secondary">취소</a>
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${post.id != null ? '수정하기' : '등록하기'}">등록하기</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

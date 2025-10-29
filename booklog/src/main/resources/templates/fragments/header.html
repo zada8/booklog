@@ -10,6 +10,14 @@
             <div class="nav-container">
                 <a href="/books" class="nav-logo">도서 로그</a>
                 
+                <!-- 메뉴 링크 -->
+                <div class="nav-links">
+                    <a href="/books" class="nav-link">도서 목록</a>
+                    <a href="/books/search-api" class="nav-link">책 검색</a>
+                    <a href="/community" class="nav-link">커뮤니티</a>
+                </div>
+                
+                
                 <div class="nav-search">
                     <form action="/books/search" method="get">
                         <input type="text" name="keyword" placeholder="책 제목, 저자, 출판사 검색..." />
@@ -30,8 +38,13 @@
                             <span sec:authentication="name">사용자</span>님
                         </span>
                         <a href="/mypage" class="nav-link">마이페이지</a>
-                        <a href="/auth/logout" class="nav-link">로그아웃</a>
-                    </div>
+						<form th:action="@{/auth/logout}" method="post"
+							style="display: inline;">
+							<button type="submit" class="nav-link"
+								style="background: none; border: none; cursor: pointer; color: inherit; font: inherit;">
+								로그아웃</button>
+						</form>
+					</div>
                 </div>
             </div>
         </nav>

@@ -1,6 +1,7 @@
 package com.example.booklog.service;
 
 import com.example.booklog.entity.Book;
+import com.example.booklog.entity.User;
 import com.example.booklog.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,14 +22,19 @@ public class BookService {
         return bookRepository.findAll();
     }
     
+    public List<Book> getBooksByUser(User user) {
+        return bookRepository.findByUserOrderByCreatedAtDesc(user);
+    }
+    
     // 최근 등록순으로 조회
     public List<Book> getRecentBooks() {
         return bookRepository.findAllByOrderByCreatedAtDesc();
     }
     
     // ID로 책 찾기
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+        		.orElseThrow(() -> new RuntimeException("책을 찾을 수 없습니다."));
     }
     
     // 책 저장 (등록/수정)

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>독서 커뮤니티 - 도서 로그</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+        
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            border-color: #1a1a1a;
+            color: #1a1a1a;
+        }
+        
+        .tab.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #1a1a1a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #333;
+        }
+        
+        .post-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .post-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f5f5f5;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-item:hover {
+            background: #fafafa;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .category-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-free {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .badge-review {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .badge-recommend {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .badge-club {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .post-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .post-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container">
+        <h1>독서 커뮤니티</h1>
+        
+        <div class="header-bar">
+            <div class="category-tabs">
+                <a th:href="@{/community}" 
+                   th:class="${selectedCategory == null ? 'tab active' : 'tab'}">
+                    전체
+                </a>
+                <a th:href="@{/community(category='FREE')}" 
+                   th:class="${selectedCategory == 'FREE' ? 'tab active' : 'tab'}">
+                    자유게시판
+                </a>
+                <a th:href="@{/community(category='REVIEW')}" 
+                   th:class="${selectedCategory == 'REVIEW' ? 'tab active' : 'tab'}">
+                    책 리뷰
+                </a>
+                <a th:href="@{/community(category='RECOMMEND')}" 
+                   th:class="${selectedCategory == 'RECOMMEND' ? 'tab active' : 'tab'}">
+                    책 추천 요청
+                </a>
+                <a th:href="@{/community(category='CLUB')}" 
+                   th:class="${selectedCategory == 'CLUB' ? 'tab active' : 'tab'}">
+                    독서 모임
+                </a>
+            </div>
+
+			<!-- 로그인한 경우만 글쓰기 버튼 표시 -->
+			<a th:if="${currentUsername != null}" href="/community/new"
+				class="btn btn-primary">글쓰기</a>
+
+			<!-- 로그인 안 한 경우 로그인 유도 -->
+			<a th:if="${currentUsername == null}" href="/auth/login"
+				class="btn btn-primary">로그인하고 글쓰기</a>
+		</div>
+        
+        <form th:action="@{/community}" method="get" class="search-bar">
+            <input type="hidden" name="category" th:value="${selectedCategory}">
+            <input type="text" 
+                   name="keyword" 
+                   th:value="${keyword}"
+                   placeholder="검색어를 입력하세요">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+        
+        <div class="post-list" th:if="${!posts.isEmpty()}">
+            <a th:each="post : ${posts}" 
+               th:href="@{/community/{id}(id=${post.id})}"
+               class="post-item">
+                <div class="post-header">
+                    <span th:class="'category-badge badge-' + ${post.category.toLowerCase()}"
+                          th:text="${post.categoryName}">카테고리</span>
+                </div>
+                <div class="post-title" th:text="${post.title}">게시글 제목</div>
+                <div class="post-meta">
+                    <span th:text="${post.user.name}">작성자</span>
+                    <span>👁 <span th:text="${post.viewCount}">0</span></span>
+                    <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="empty-message" th:if="${posts.isEmpty()}">
+            작성된 게시글이 없습니다.
+        </div>
+    </div>
+</body>
+</html>
