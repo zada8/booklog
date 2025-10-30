@@ -38,7 +38,7 @@ public class KakaoBookApiService {
             
             
             // API 요청 URL
-            String url = apiUrl + "?query=" + query;
+            String url = apiUrl + "?query=" + query + "&size=50";
             
             System.out.println("요청 URL: " + url);
             
@@ -142,7 +142,7 @@ public class KakaoBookApiService {
                 // 소개
                 String contents = doc.optString("contents", "");
                 if (!contents.isEmpty()) {
-                    book.setSubject(contents.substring(0, Math.min(100, contents.length())) + "...");
+                    book.setDescription(contents.substring(0, Math.min(200, contents.length())) + "...");
                 }
                 
                 System.out.println("책 파싱: " + book.getTitle());

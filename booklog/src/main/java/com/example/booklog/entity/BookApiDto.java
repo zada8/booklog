@@ -9,6 +9,7 @@ public class BookApiDto {
     private String publishDate;     // 출판일
     private String page;            // 페이지
     private String subject;         // 주제/장르
+    private String description;
     
     // 기본 생성자
     public BookApiDto() {
@@ -90,5 +91,13 @@ public class BookApiDto {
     
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
