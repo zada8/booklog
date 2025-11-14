@@ -32,6 +32,7 @@ public class SecurityConfig {
                     "/books",
                     "/books/{id}",
                     "/books/search",
+                    "/books/search-api",
                     "/community",
                     "/community/{id}",
                     "/css/**",
@@ -43,10 +44,9 @@ public class SecurityConfig {
                     "/books/new",
                     "/books/{id}/edit",
                     "/books/{id}/delete",
-                    "/books/search-api",
                     "/books/new-from-api",
-                    "/community/new",   
-                    "/community/{id}/edit", 
+                    "/community/new",
+                    "/community/{id}/edit",
                     "/community/{id}/delete",
                     "/mypage/**"
                 ).authenticated()
