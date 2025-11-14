@@ -344,13 +344,13 @@
         <h1>책 검색하기</h1>
         
         <div class="search-box">
-            <form class="search-form" th:action="@{/books/search-api}" method="get">
-                <input type="text" 
-                       name="query" 
-                       class="search-input" 
+            <form class="search-form" th:action="@{/books/search}" method="get">
+                <input type="text"
+                       name="keyword"
+                       class="search-input"
                        th:value="${query}"
-                       placeholder="책 제목 또는 저자를 입력하세요..."
-                       required 
+                       placeholder="책 제목, 저자, 출판사 검색..."
+                       required
                        autofocus>
                 <button type="submit" class="search-btn">검색</button>
             </form>
