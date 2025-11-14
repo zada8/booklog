@@ -209,17 +209,45 @@ public class BookController {
     @GetMapping("/new-from-recommend")
     public String newBookFromRecommend(@RequestParam String isbn, Model model) {
         Book book = new Book();
-        
+
         BookApiDto apiBook = kakaoApiService.getBookByIsbn(isbn);
-        
+
         if (apiBook != null) {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
         }
-        
+
         model.addAttribute("book", book);
         model.addAttribute("fromRecommend", true);
         return "books/form";
+    }
+
+    // API에서 바로 '읽고 싶은 책'으로 등록
+    @PostMapping("/quick-register")
+    public String quickRegister(@RequestParam String isbn,
+                               Authentication authentication,
+                               RedirectAttributes redirectAttributes) {
+        BookApiDto apiBook = kakaoApiService.getBookByIsbn(isbn);
+
+        if (apiBook == null) {
+            redirectAttributes.addFlashAttribute("error", "책 정보를 찾을 수 없습니다.");
+            return "redirect:/books/search-api";
+        }
+
+        User user = userService.findByUsername(authentication.getName());
+
+        Book book = new Book();
+        book.setTitle(apiBook.getTitle());
+        book.setAuthor(apiBook.getAuthor());
+        book.setPublisher(apiBook.getPublisher());
+        book.setStatus("WANT_TO_READ");
+        book.setRating(null); // 별점 없음
+        book.setUser(user);
+
+        bookService.saveBook(book);
+
+        redirectAttributes.addFlashAttribute("message", "'" + book.getTitle() + "'이(가) 읽고 싶은 책으로 등록되었습니다.");
+        return "redirect:/books";
     }
 }
