@@ -164,13 +164,28 @@ public class BookController {
     
     // 검색 기능
     @GetMapping("/search")
-    public String searchBooks(@RequestParam String keyword, 
+    public String searchBooks(@RequestParam String keyword,
                              Model model,
                              Authentication authentication) {
         List<Book> books = bookService.searchBooks(keyword);
         model.addAttribute("books", books);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("currentUsername", authentication.getName());
+
+        // Authentication null 체크
+        if (authentication != null) {
+            model.addAttribute("currentUsername", authentication.getName());
+        } else {
+            model.addAttribute("currentUsername", null);
+        }
+
+        // 사서 추천 도서
+        try {
+            List<RecommendedBookDto> recommendedBooks = nlApiService.getLatestRecommendedBooks(5);
+            model.addAttribute("recommendedBooks", recommendedBooks);
+        } catch (Exception e) {
+            model.addAttribute("recommendedBooks", new ArrayList<>());
+        }
+
         return "books/list";
     }
     
