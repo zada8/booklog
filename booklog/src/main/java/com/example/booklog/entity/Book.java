@@ -20,8 +20,7 @@ public class Book {
     
     private String genre;
     
-    @Column(nullable = false)
-    private Integer rating; // 1-5
+    private Integer rating; // 1-5 (읽지 않은 책은 null 가능)
     
     @Column(columnDefinition = "TEXT")
     private String review;
