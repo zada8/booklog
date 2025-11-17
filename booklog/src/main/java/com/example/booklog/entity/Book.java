@@ -19,14 +19,18 @@ public class Book {
     private String publisher;
     
     private String genre;
-    
-    @Column(nullable = false)
-    private Integer rating; // 1-5
-    
+
+    private Integer rating; // 1-5 (읽은 책에서만 사용)
+
     @Column(columnDefinition = "TEXT")
     private String review;
-    
-    private LocalDate readDate;
+
+    private LocalDate readDate; // 다 읽은 날짜
+
+    private LocalDate startDate; // 읽기 시작한 날짜
+
+    @Column(columnDefinition = "TEXT")
+    private String memo; // 메모
     
     //독서 상태
     @Column(nullable = false)
@@ -146,7 +150,23 @@ public class Book {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
     //상태 한글명 반환
     public String getStatusName() {
         switch (status) {

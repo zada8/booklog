@@ -75,46 +75,44 @@ public class BookController {
     
  // 책 등록/수정 처리
     @PostMapping
-    public String saveBook(@ModelAttribute Book book, 
+    public String saveBook(@ModelAttribute Book book,
                           Authentication authentication,
                           RedirectAttributes redirectAttributes) {
-        
+
         // 새 책 등록
         if (book.getId() == null) {
             User user = userService.findByUsername(authentication.getName());
             book.setUser(user);
-            
+
             // status 기본값 설정
             if (book.getStatus() == null || book.getStatus().isEmpty()) {
                 book.setStatus("WANT_TO_READ");
             }
-            
-            // rating 기본값 설정
-            if (book.getRating() == null) {
-                book.setRating(3);
-            }
-            
+
+            // rating은 READ 상태일 때만 필수, 나머지는 null 허용
+            // 폼에서 전달되지 않으면 null로 유지
+
             bookService.saveBook(book);
-        } 
+        }
         // 기존 책 수정
         else {
             Book existingBook = bookService.getBookById(book.getId());
-            
+
             // 권한 체크
             if (!existingBook.getUser().getUsername().equals(authentication.getName())) {
                 redirectAttributes.addFlashAttribute("error", "수정 권한이 없습니다.");
                 return "redirect:/books";
             }
-            
+
             // status 유지
             if (book.getStatus() == null || book.getStatus().isEmpty()) {
                 book.setStatus(existingBook.getStatus());
             }
-            
+
             book.setUser(existingBook.getUser());
             bookService.saveBook(book);
         }
-        
+
         return "redirect:/books";
     }
     
@@ -128,20 +126,30 @@ public class BookController {
     
     // 책 수정 폼
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, 
+    public String editForm(@PathVariable Long id,
                           Model model,
                           Authentication authentication,
                           RedirectAttributes redirectAttributes) {
         Book book = bookService.getBookById(id);
-        
+
         // 권한 체크
         if (!book.getUser().getUsername().equals(authentication.getName())) {
             redirectAttributes.addFlashAttribute("error", "수정 권한이 없습니다.");
             return "redirect:/books";
         }
-        
+
         model.addAttribute("book", book);
-        return "books/form";
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (book.getStatus()) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
+        }
     }
     
     // 책 삭제
@@ -187,11 +195,11 @@ public class BookController {
     
     // API에서 선택한 책으로 등록 폼 이동
     @GetMapping("/new-from-api")
-    public String newBookFromApi(@RequestParam String isbn, 
+    public String newBookFromApi(@RequestParam String isbn,
     		 					@RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
     		 					Model model) {
         BookApiDto apiBook = kakaoApiService.getBookByIsbn(isbn);
-        
+
         Book book = new Book();
         if (apiBook != null) {
             book.setTitle(apiBook.getTitle());
@@ -199,27 +207,50 @@ public class BookController {
             book.setPublisher(apiBook.getPublisher());
         }
         book.setStatus(status);
-        
+
         model.addAttribute("book", book);
         model.addAttribute("fromApi", true);
-        return "books/form";
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (status) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
+        }
     }
     
     // 사서 추천 도서에서 등록 폼으로 이동
     @GetMapping("/new-from-recommend")
-    public String newBookFromRecommend(@RequestParam String isbn, Model model) {
+    public String newBookFromRecommend(@RequestParam String isbn,
+    								   @RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
+    								   Model model) {
         Book book = new Book();
-        
+
         BookApiDto apiBook = kakaoApiService.getBookByIsbn(isbn);
-        
+
         if (apiBook != null) {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
         }
-        
+        book.setStatus(status);
+
         model.addAttribute("book", book);
         model.addAttribute("fromRecommend", true);
-        return "books/form";
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (status) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
+        }
     }
 }
