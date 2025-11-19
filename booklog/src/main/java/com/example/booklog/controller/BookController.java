@@ -293,4 +293,63 @@ public class BookController {
                 return "books/want-to-read-form";
         }
     }
+
+    // 사서 추천 도서 팝업 상세 정보
+    @GetMapping("/recommend-popup")
+    public String recommendPopup(@RequestParam String isbn,
+                                 @RequestParam String title,
+                                 @RequestParam String author,
+                                 @RequestParam(required = false) String publisher,
+                                 @RequestParam(required = false) String contents,
+                                 @RequestParam(required = false) String category,
+                                 @RequestParam(required = false) String coverUrl,
+                                 @RequestParam(required = false) Integer publishYear,
+                                 Model model) {
+        // RecommendedBookDto 객체 생성
+        RecommendedBookDto book = new RecommendedBookDto();
+        book.setIsbn(isbn);
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+
+        // HTML 태그 제거 처리
+        if (contents != null && !contents.isEmpty()) {
+            book.setContents(removeHtmlTags(contents));
+        } else {
+            book.setContents(contents);
+        }
+
+        book.setCategory(category);
+        book.setCoverUrl(coverUrl);
+        book.setPublishYear(publishYear);
+
+        model.addAttribute("book", book);
+        return "books/recommend-popup";
+    }
+
+    // HTML 태그 제거 유틸리티 메서드
+    private String removeHtmlTags(String html) {
+        if (html == null || html.isEmpty()) {
+            return html;
+        }
+
+        // HTML 태그 제거
+        String text = html.replaceAll("<[^>]*>", "");
+
+        // HTML 엔티티 디코딩
+        text = text.replace("&nbsp;", " ")
+                   .replace("&quot;", "\"")
+                   .replace("&apos;", "'")
+                   .replace("&lt;", "<")
+                   .replace("&gt;", ">")
+                   .replace("&amp;", "&");
+
+        // 연속된 공백을 하나로 축소
+        text = text.replaceAll("\\s+", " ");
+
+        // 앞뒤 공백 제거
+        text = text.trim();
+
+        return text;
+    }
 }

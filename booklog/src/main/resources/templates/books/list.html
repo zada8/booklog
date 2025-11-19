@@ -344,9 +344,20 @@
 			</div>
 
 			<div class="recommended-books">
-				<a th:each="book : ${recommendedBooks}"
-					th:href="@{/books/new-from-recommend(isbn=${book.isbn})}"
-					class="recommended-book"> <!-- recommended-cover-wrapper 추가 -->
+				<div th:each="book : ${recommendedBooks}"
+					class="recommended-book"
+					style="cursor: pointer;"
+					th:data-isbn="${book.isbn}"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-contents="${book.contents}"
+					th:data-category="${book.category}"
+					th:data-coverurl="${book.coverUrl}"
+					th:data-publishyear="${book.publishYear}"
+					role="button"
+					tabindex="0">
+					<!-- recommended-cover-wrapper 추가 -->
 					<div class="recommended-cover-wrapper">
 						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
 							th:alt="${book.title}" class="recommended-cover">
@@ -356,7 +367,7 @@
 					<div class="recommended-book-title" th:text="${book.title}">책
 						제목</div>
 					<div class="recommended-book-author" th:text="${book.author}">저자</div>
-				</a>
+				</div>
 			</div>
 		</div>
 
@@ -449,5 +460,67 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 사서 추천 도서 팝업 JavaScript -->
+    <script>
+        // 페이지 로드 시 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모든 추천 도서 카드에 클릭 이벤트 등록
+            const recommendedBooks = document.querySelectorAll('.recommended-book[data-isbn]');
+
+            recommendedBooks.forEach(function(bookElement) {
+                bookElement.addEventListener('click', function() {
+                    // data 속성에서 책 정보 읽기
+                    const isbn = this.dataset.isbn;
+                    const title = this.dataset.title;
+                    const author = this.dataset.author;
+                    const publisher = this.dataset.publisher;
+                    const contents = this.dataset.contents;
+                    const category = this.dataset.category;
+                    const coverUrl = this.dataset.coverurl;
+                    const publishYear = this.dataset.publishyear;
+
+                    // 팝업 열기
+                    openBookPopup(isbn, title, author, publisher, contents, category, coverUrl, publishYear);
+                });
+
+                // 키보드 접근성 (Enter 키)
+                bookElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.click();
+                    }
+                });
+            });
+        });
+
+        function openBookPopup(isbn, title, author, publisher, contents, category, coverUrl, publishYear) {
+            // URL 파라미터 구성
+            const params = new URLSearchParams({
+                isbn: isbn,
+                title: title,
+                author: author
+            });
+
+            // 선택적 파라미터 추가
+            if (publisher && publisher !== 'null') params.append('publisher', publisher);
+            if (contents && contents !== 'null') params.append('contents', contents);
+            if (category && category !== 'null') params.append('category', category);
+            if (coverUrl && coverUrl !== 'null') params.append('coverUrl', coverUrl);
+            if (publishYear && publishYear !== 'null') params.append('publishYear', publishYear);
+
+            // 팝업 URL
+            const url = '/books/recommend-popup?' + params.toString();
+
+            // 팝업 옵션 (작은 창)
+            const width = 650;
+            const height = 750;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const options = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+
+            // 팝업 열기
+            window.open(url, 'recommendBookPopup', options);
+        }
+    </script>
 </body>
 </html>
