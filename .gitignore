@@ -8,6 +8,7 @@ pom.xml.versionsBackup
 .classpath
 .project
 .settings/
+.factorypath
 
 # IntelliJ
 .idea/
