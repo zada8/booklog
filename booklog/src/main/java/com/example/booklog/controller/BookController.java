@@ -293,4 +293,30 @@ public class BookController {
                 return "books/want-to-read-form";
         }
     }
+
+    // 사서 추천 도서 팝업 상세 정보
+    @GetMapping("/recommend-popup")
+    public String recommendPopup(@RequestParam String isbn,
+                                 @RequestParam String title,
+                                 @RequestParam String author,
+                                 @RequestParam(required = false) String publisher,
+                                 @RequestParam(required = false) String contents,
+                                 @RequestParam(required = false) String category,
+                                 @RequestParam(required = false) String coverUrl,
+                                 @RequestParam(required = false) Integer publishYear,
+                                 Model model) {
+        // RecommendedBookDto 객체 생성
+        RecommendedBookDto book = new RecommendedBookDto();
+        book.setIsbn(isbn);
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setContents(contents);
+        book.setCategory(category);
+        book.setCoverUrl(coverUrl);
+        book.setPublishYear(publishYear);
+
+        model.addAttribute("book", book);
+        return "books/recommend-popup";
+    }
 }

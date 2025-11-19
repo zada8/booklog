@@ -344,9 +344,13 @@
 			</div>
 
 			<div class="recommended-books">
-				<a th:each="book : ${recommendedBooks}"
-					th:href="@{/books/new-from-recommend(isbn=${book.isbn})}"
-					class="recommended-book"> <!-- recommended-cover-wrapper 추가 -->
+				<div th:each="book : ${recommendedBooks}"
+					class="recommended-book"
+					style="cursor: pointer;"
+					th:onclick="'openBookPopup(\'' + ${book.isbn} + '\', \'' + ${#strings.escapeJavaScript(book.title)} + '\', \'' + ${#strings.escapeJavaScript(book.author)} + '\', \'' + ${book.publisher != null ? #strings.escapeJavaScript(book.publisher) : ''} + '\', \'' + ${book.contents != null ? #strings.escapeJavaScript(book.contents) : ''} + '\', \'' + ${book.category != null ? #strings.escapeJavaScript(book.category) : ''} + '\', \'' + ${book.coverUrl != null ? book.coverUrl : ''} + '\', \'' + ${book.publishYear != null ? book.publishYear : ''} + '\')'"
+					role="button"
+					tabindex="0">
+					<!-- recommended-cover-wrapper 추가 -->
 					<div class="recommended-cover-wrapper">
 						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
 							th:alt="${book.title}" class="recommended-cover">
@@ -356,7 +360,7 @@
 					<div class="recommended-book-title" th:text="${book.title}">책
 						제목</div>
 					<div class="recommended-book-author" th:text="${book.author}">저자</div>
-				</a>
+				</div>
 			</div>
 		</div>
 
@@ -449,5 +453,37 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 사서 추천 도서 팝업 JavaScript -->
+    <script>
+        function openBookPopup(isbn, title, author, publisher, contents, category, coverUrl, publishYear) {
+            // URL 파라미터 구성
+            const params = new URLSearchParams({
+                isbn: isbn,
+                title: title,
+                author: author
+            });
+
+            // 선택적 파라미터 추가
+            if (publisher) params.append('publisher', publisher);
+            if (contents) params.append('contents', contents);
+            if (category) params.append('category', category);
+            if (coverUrl) params.append('coverUrl', coverUrl);
+            if (publishYear) params.append('publishYear', publishYear);
+
+            // 팝업 URL
+            const url = '/books/recommend-popup?' + params.toString();
+
+            // 팝업 옵션 (작은 창)
+            const width = 650;
+            const height = 750;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const options = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+
+            // 팝업 열기
+            window.open(url, 'recommendBookPopup', options);
+        }
+    </script>
 </body>
 </html>
