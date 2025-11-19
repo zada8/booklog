@@ -20,6 +20,7 @@ public class Book {
     
     private String genre;
 
+    @Column(nullable = true)
     private Integer rating; // 1-5 (읽은 책에서만 사용)
 
     @Column(columnDefinition = "TEXT")
