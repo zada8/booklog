@@ -170,20 +170,8 @@ public class BookController {
         return "redirect:/books";
     }
     
-    // 검색 기능
+    // API 검색 페이지 (메인 검색)
     @GetMapping("/search")
-    public String searchBooks(@RequestParam String keyword, 
-                             Model model,
-                             Authentication authentication) {
-        List<Book> books = bookService.searchBooks(keyword);
-        model.addAttribute("books", books);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("currentUsername", authentication.getName());
-        return "books/list";
-    }
-    
-    // API 검색 페이지
-    @GetMapping("/search-api")
     public String searchApiPage(@RequestParam(required = false) String query, Model model) {
         if (query != null && !query.trim().isEmpty()) {
             List<BookApiDto> books = kakaoApiService.search(query);
@@ -191,6 +179,18 @@ public class BookController {
             model.addAttribute("query", query);
         }
         return "books/search";
+    }
+
+    // DB 검색 기능 (로그인 필요)
+    @GetMapping("/search-api")
+    public String searchBooks(@RequestParam String keyword,
+                             Model model,
+                             Authentication authentication) {
+        List<Book> books = bookService.searchBooks(keyword);
+        model.addAttribute("books", books);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("currentUsername", authentication.getName());
+        return "books/list";
     }
     
     // API에서 선택한 책으로 등록 폼 이동
