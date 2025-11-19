@@ -360,7 +360,7 @@
                     <td th:text="${book.publisher}">출판사</td>
                     <td th:text="${book.genre}">장르</td>
                     <td>
-                        <span class="rating" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
+                        <span class="rating" th:if="${book.rating != null}" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
                     </td>
                     <td th:text="${book.readDate}">2024-01-01</td>
                     

@@ -221,7 +221,7 @@
                 <div class="info-row">
                     <div class="info-label">평점</div>
                     <div class="info-value">
-                        <span class="rating" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
+                        <span class="rating" th:if="${book.rating != null}" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
                     </div>
                 </div>
                 
