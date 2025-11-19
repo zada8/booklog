@@ -39,4 +39,34 @@ public class UserService {
     public boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }
+
+    // 사용자 정보 업데이트
+    public User updateUser(User user, String name, String email, String currentPassword, String newPassword) {
+        // 이름 업데이트
+        if (name != null && !name.trim().isEmpty()) {
+            user.setName(name);
+        }
+
+        // 이메일 업데이트
+        if (email != null && !email.trim().isEmpty()) {
+            user.setEmail(email);
+        }
+
+        // 비밀번호 변경 (새 비밀번호가 입력된 경우에만)
+        if (newPassword != null && !newPassword.trim().isEmpty()) {
+            // 현재 비밀번호 확인
+            if (currentPassword != null && passwordEncoder.matches(currentPassword, user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+            } else {
+                throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            }
+        }
+
+        return userRepository.save(user);
+    }
+
+    // 사용자 삭제
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
 }

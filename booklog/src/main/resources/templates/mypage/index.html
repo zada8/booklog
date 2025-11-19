@@ -59,7 +59,66 @@
             color: #1a1a1a;
             font-size: 15px;
         }
-        
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #f5f5f5;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-edit {
+            background: #4CAF50;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-edit:hover {
+            background: #45a049;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -144,15 +203,26 @@
     
     <div class="container">
         <h1>마이페이지</h1>
-        
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
         <div class="user-info">
             <div class="info-row">
-                <div class="info-label">아이디</div>
-                <div class="info-value" sec:authentication="name">username</div>
+                <div class="info-label">이름</div>
+                <div class="info-value" th:text="${user.name}">홍길동</div>
             </div>
             <div class="info-row">
-                <div class="info-label">권한</div>
-                <div class="info-value" sec:authentication="authorities">ROLE_USER</div>
+                <div class="info-label">아이디</div>
+                <div class="info-value" th:text="${user.username}">username</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">이메일</div>
+                <div class="info-value" th:text="${user.email != null ? user.email : '등록되지 않음'}">email@example.com</div>
+            </div>
+            <div class="button-group">
+                <a href="/mypage/edit" class="btn btn-edit">정보 수정</a>
+                <a href="/mypage/delete" class="btn btn-delete" onclick="return confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">회원 탈퇴</a>
             </div>
         </div>
         
