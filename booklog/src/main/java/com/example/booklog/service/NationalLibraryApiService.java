@@ -258,7 +258,7 @@ public class NationalLibraryApiService {
     public List<RecommendedBookDto> getLatestRecommendedBooks(int count) {
         try {
             // API에서 더 많은 책을 가져와서 랜덤으로 선택
-            int fetchCount = Math.max(count * 4, 20); // 최소 20개 또는 요청 수의 4배
+            int fetchCount = Math.max(count * 10, 50); // 최소 50개 또는 요청 수의 10배
 
             String url = UriComponentsBuilder.fromUriString(RECOMMEND_API_URL)
                     .queryParam("key", apiKey)
