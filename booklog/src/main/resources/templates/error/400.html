@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>400 - 요청 오류 | 도서 로그</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 헤더 */
+        .header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        /* 에러 컨텐츠 */
+        .error-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .error-content {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+        }
+
+        .error-code {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .error-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .error-details {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .error-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .error-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-details li {
+            font-size: 14px;
+            color: #666;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .error-details li:last-child {
+            border-bottom: none;
+        }
+
+        .error-details li::before {
+            content: "•";
+            color: #1a1a1a;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-right: 8px;
+        }
+
+        /* 버튼 */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+            margin-right: 12px;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1a1a1a;
+            transform: translateY(-1px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* 푸터 */
+        .footer {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .error-icon {
+                font-size: 60px;
+            }
+
+            .error-code {
+                font-size: 36px;
+            }
+
+            .error-title {
+                font-size: 20px;
+            }
+
+            .error-description {
+                font-size: 15px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <a href="/" class="logo">도서 로그</a>
+    </header>
+
+    <!-- 에러 컨텐츠 -->
+    <main class="error-container">
+        <div class="error-content">
+            <div class="error-icon">⚠️</div>
+            <h1 class="error-code">400</h1>
+            <h2 class="error-title">잘못된 요청입니다</h2>
+            <p class="error-description">
+                요청 데이터의 크기가 너무 크거나 형식이 올바르지 않습니다.<br>
+                잠시 후 다시 시도해주세요.
+            </p>
+
+            <div class="error-details">
+                <h3>해결 방법</h3>
+                <ul>
+                    <li>브라우저의 쿠키와 캐시를 삭제해보세요</li>
+                    <li>페이지를 새로고침(F5)하거나 다시 시도해보세요</li>
+                    <li>로그아웃 후 다시 로그인해보세요</li>
+                    <li>문제가 계속되면 관리자에게 문의해주세요</li>
+                </ul>
+            </div>
+
+            <div class="btn-group">
+                <a href="javascript:history.back()" class="btn btn-secondary">이전 페이지</a>
+                <a href="/" class="btn btn-primary">홈으로 가기</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p>© 2025 도서 로그. 문제가 지속되면 관리자에게 문의하세요.</p>
+    </footer>
+</body>
+</html>
