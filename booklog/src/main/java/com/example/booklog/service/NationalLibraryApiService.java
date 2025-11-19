@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -252,29 +253,40 @@ public class NationalLibraryApiService {
     // ==========================================
     
     /**
-     * 최신 사서 추천 도서 가져오기
+     * 최신 사서 추천 도서 가져오기 (랜덤)
      */
     public List<RecommendedBookDto> getLatestRecommendedBooks(int count) {
         try {
+            // API에서 더 많은 책을 가져와서 랜덤으로 선택
+            int fetchCount = Math.max(count * 4, 20); // 최소 20개 또는 요청 수의 4배
+
             String url = UriComponentsBuilder.fromUriString(RECOMMEND_API_URL)
                     .queryParam("key", apiKey)
                     .queryParam("startRowNumApi", "1")
-                    .queryParam("endRowNumApi", String.valueOf(count))
+                    .queryParam("endRowNumApi", String.valueOf(fetchCount))
                     .build()
                     .encode()
                     .toUriString();
-            
-            System.out.println("=== 사서추천 API 요청 ===");
-            
+
+            System.out.println("=== 사서추천 API 요청 (랜덤 선택) ===");
+
             String response = restTemplate.getForObject(url, String.class);
-            
+
             if (response == null || response.trim().isEmpty()) {
                 System.out.println("사서추천 API 응답 없음");
                 return new ArrayList<>();
             }
-            
-            return parseRecommendXmlResponse(response);
-            
+
+            List<RecommendedBookDto> allBooks = parseRecommendXmlResponse(response);
+
+            // 랜덤으로 섞어서 요청한 개수만큼 반환
+            if (allBooks.size() > count) {
+                Collections.shuffle(allBooks);
+                return allBooks.subList(0, count);
+            }
+
+            return allBooks;
+
         } catch (Exception e) {
             System.out.println("=== 사서추천 API 에러 ===");
             e.printStackTrace();
