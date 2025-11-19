@@ -43,4 +43,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     //사용자+상태별 조회
     List<Book> findByUserAndStatusOrderByCreatedAtDesc(User user, String status);
+
+    // 다른 사람들의 책 + 상태별 조회
+    List<Book> findByUserNotAndStatusOrderByCreatedAtDesc(User user, String status);
 }
