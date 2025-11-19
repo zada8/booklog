@@ -40,19 +40,24 @@ public class BookController {
     @Autowired
     private NationalLibraryApiService nlApiService;
     
-    // 책 목록
+    // 내 책 목록 (기본)
     @GetMapping
     public String list(Model model, Authentication authentication) {
-        List<Book> books = bookService.getAllBooks();
-        model.addAttribute("books", books);
-        
+        List<Book> books;
+
         // Authentication null 체크
         if (authentication != null) {
+            User user = userService.findByUsername(authentication.getName());
+            books = bookService.getBooksByUser(user);
             model.addAttribute("currentUsername", authentication.getName());
         } else {
+            books = new ArrayList<>();
             model.addAttribute("currentUsername", null);
         }
-        
+
+        model.addAttribute("books", books);
+        model.addAttribute("viewMode", "my"); // 현재 보기 모드
+
         // 사서 추천 도서
         try {
             List<RecommendedBookDto> recommendedBooks = nlApiService.getLatestRecommendedBooks(5);
@@ -60,7 +65,36 @@ public class BookController {
         } catch (Exception e) {
             model.addAttribute("recommendedBooks", new ArrayList<>());
         }
-        
+
+        return "books/list";
+    }
+
+    // 다른 사람들의 책 목록
+    @GetMapping("/others")
+    public String listOthers(Model model, Authentication authentication) {
+        List<Book> books;
+
+        // Authentication null 체크
+        if (authentication != null) {
+            User user = userService.findByUsername(authentication.getName());
+            books = bookService.getBooksByOthers(user);
+            model.addAttribute("currentUsername", authentication.getName());
+        } else {
+            books = bookService.getAllBooks();
+            model.addAttribute("currentUsername", null);
+        }
+
+        model.addAttribute("books", books);
+        model.addAttribute("viewMode", "others"); // 현재 보기 모드
+
+        // 사서 추천 도서
+        try {
+            List<RecommendedBookDto> recommendedBooks = nlApiService.getLatestRecommendedBooks(5);
+            model.addAttribute("recommendedBooks", recommendedBooks);
+        } catch (Exception e) {
+            model.addAttribute("recommendedBooks", new ArrayList<>());
+        }
+
         return "books/list";
     }
     

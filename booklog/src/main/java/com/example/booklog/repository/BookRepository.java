@@ -37,7 +37,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     //List<Book> findByPublisherContaining(String publisher);
     
     List<Book> findByUserOrderByCreatedAtDesc(User user);
-    
+
+    // 특정 사용자가 아닌 다른 사람들의 책 조회
+    List<Book> findByUserNotOrderByCreatedAtDesc(User user);
+
     //사용자+상태별 조회
     List<Book> findByUserAndStatusOrderByCreatedAtDesc(User user, String status);
 }
