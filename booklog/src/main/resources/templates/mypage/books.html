@@ -280,15 +280,15 @@
         <!-- 통계 -->
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-label">총 읽은 책</div>
+                <div class="stat-label" th:text="${selectedStatus == 'READ' ? '총 읽은 책' : (selectedStatus == 'READING' ? '읽고 있는 책' : '읽고 싶은 책')}">총 도서</div>
                 <div class="stat-value" th:text="${books.size()} + '권'">0권</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" th:if="${selectedStatus == 'READ'}">
                 <div class="stat-label">평균 평점</div>
                 <div class="stat-value">
-                    <span th:if="${!books.isEmpty()}" 
+                    <span th:if="${!books.isEmpty() && averageRating != null}"
                           th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</span>
-                    <span th:if="${books.isEmpty()}">-</span>
+                    <span th:if="${books.isEmpty() || averageRating == null}">-</span>
                 </div>
             </div>
         </div>
@@ -331,7 +331,8 @@
                               th:text="${book.statusName}">상태</span>
                     </td>
                     <td th:if="${selectedStatus == 'READ'}">
-                        <span class="rating" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
+                        <span class="rating" th:if="${book.rating != null}" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
+                        <span th:if="${book.rating == null}">-</span>
                     </td>
                     <td th:if="${selectedStatus == 'READ'}" th:text="${book.readDate}">2024-01-01</td>
                     <td class="actions">
