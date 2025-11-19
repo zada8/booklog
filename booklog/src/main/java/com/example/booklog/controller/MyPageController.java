@@ -61,13 +61,19 @@ public class MyPageController {
             statusName = "전체";
         }
         
-        // 평균 평점 계산
-        double averageRating = 0.0;
+        // 평균 평점 계산 (rating이 null이 아닌 책들만)
+        Double averageRating = null;
         if (!myBooks.isEmpty()) {
-            int totalRating = myBooks.stream()
-                    .mapToInt(Book::getRating)
-                    .sum();
-            averageRating = (double) totalRating / myBooks.size();
+            List<Book> booksWithRating = myBooks.stream()
+                    .filter(book -> book.getRating() != null)
+                    .toList();
+
+            if (!booksWithRating.isEmpty()) {
+                int totalRating = booksWithRating.stream()
+                        .mapToInt(Book::getRating)
+                        .sum();
+                averageRating = (double) totalRating / booksWithRating.size();
+            }
         }
         
         model.addAttribute("books", myBooks);
