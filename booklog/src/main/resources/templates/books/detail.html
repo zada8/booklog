@@ -206,10 +206,11 @@
                 </div>
 
 				<div class="info-row">
-					<span class="label">상태</span> <span class="value"> <span
-						th:class="'status-badge status-' + ${book.status.toLowerCase().replace('_', '-')}"
+					<div class="info-label">상태</div>
+					<div class="info-value">
+						<span th:class="'status-badge status-' + ${book.status.toLowerCase().replace('_', '-')}"
 						th:text="${book.statusName}">상태</span>
-					</span>
+					</div>
 				</div>
 
 				<div class="info-row">
