@@ -260,25 +260,25 @@
     </style>
     <script>
         // 부모 창에서 로그인하고 팝업 닫기
-        function loginInParent() {
+        function loginInParent(event) {
+            event.preventDefault();
             if (window.opener && !window.opener.closed) {
                 window.opener.location.href = '/auth/login';
                 window.close();
             } else {
                 window.location.href = '/auth/login';
             }
-            return false;
         }
 
         // 부모 창에서 책 등록 폼으로 이동하고 팝업 닫기
-        function addBookInParent(url) {
+        function addBookInParent(event, url) {
+            event.preventDefault();
             if (window.opener && !window.opener.closed) {
                 window.opener.location.href = url;
                 window.close();
             } else {
                 window.location.href = url;
             }
-            return false;
         }
     </script>
 </head>
@@ -341,13 +341,13 @@
                     <div class="btn-group">
                         <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='WANT_TO_READ')}"
                            class="btn-status btn-status-want"
-                           onclick="return addBookInParent(this.href);">읽고 싶은 책</a>
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='WANT_TO_READ')} + '\');'">읽고 싶은 책</a>
                         <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='READING')}"
                            class="btn-status btn-status-reading"
-                           onclick="return addBookInParent(this.href);">읽고 있는 책</a>
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='READING')} + '\');'">읽고 있는 책</a>
                         <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='READ')}"
                            class="btn-status btn-status-read"
-                           onclick="return addBookInParent(this.href);">읽은 책</a>
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='READ')} + '\');'">읽은 책</a>
                     </div>
                 </div>
 
@@ -357,7 +357,7 @@
                         책을 내 서재에 추가하려면 로그인이 필요합니다
                     </div>
                     <div style="text-align: center;">
-                        <a href="/auth/login" class="btn-login" onclick="return loginInParent();">로그인하기</a>
+                        <a href="/auth/login" class="btn-login" onclick="loginInParent(event);">로그인하기</a>
                     </div>
                 </div>
             </div>
