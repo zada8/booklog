@@ -25,6 +25,11 @@ public class BookService {
     public List<Book> getBooksByUser(User user) {
         return bookRepository.findByUserOrderByCreatedAtDesc(user);
     }
+
+    // 다른 사람들의 책 조회 (특정 사용자 제외)
+    public List<Book> getBooksByOthers(User user) {
+        return bookRepository.findByUserNotOrderByCreatedAtDesc(user);
+    }
     
     // 최근 등록순으로 조회
     public List<Book> getRecentBooks() {

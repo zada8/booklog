@@ -330,15 +330,24 @@
 
 		<div class="header-actions">
     		<div>
-        		<p>총 <strong th:text="${books.size()}">0</strong>권의 책</p>
+        		<p th:if="${viewMode == 'my'}">내 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
+        		<p th:if="${viewMode == 'others'}">다른 사람들의 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
     		</div>
     		<div style="display: flex; gap: 12px;">
-        		<a href="/books/search-api" class="btn btn-primary">책 검색</a>
-        		<a href="/books/new" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">직접 입력</a>
+        		<!-- 보기 모드 전환 버튼 -->
+        		<a th:if="${viewMode == 'my'}" href="/books/others" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">다른 사람 책 보기</a>
+        		<a th:if="${viewMode == 'others'}" href="/books" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">내 책 보기</a>
+
+        		<!-- 내 책 보기 모드일 때만 검색/입력 버튼 표시 -->
+        		<th:block th:if="${viewMode == 'my'}">
+            		<a href="/books/search-api" class="btn btn-primary">책 검색</a>
+            		<a href="/books/new" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">직접 입력</a>
+        		</th:block>
     		</div>
 		</div>
         <div th:if="${books.isEmpty()}" class="empty-message">
-            등록된 책이 없습니다. 첫 번째 책을 등록해보세요!
+            <span th:if="${viewMode == 'my'}">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
+            <span th:if="${viewMode == 'others'}">다른 사람들이 등록한 책이 없습니다.</span>
         </div>
         
         <table th:if="${!books.isEmpty()}">
