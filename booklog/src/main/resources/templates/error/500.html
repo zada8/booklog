@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - 서버 오류 | 도서 로그</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        .error-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .error-content {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+        }
+
+        .error-code {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .error-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+            margin-right: 12px;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1a1a1a;
+            transform: translateY(-1px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .error-icon {
+                font-size: 60px;
+            }
+
+            .error-code {
+                font-size: 36px;
+            }
+
+            .error-title {
+                font-size: 20px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">도서 로그</a>
+    </header>
+
+    <main class="error-container">
+        <div class="error-content">
+            <div class="error-icon">🔧</div>
+            <h1 class="error-code">500</h1>
+            <h2 class="error-title">서버 오류가 발생했습니다</h2>
+            <p class="error-description">
+                일시적인 문제가 발생했습니다.<br>
+                잠시 후 다시 시도해주세요. 문제가 계속되면 관리자에게 문의해주세요.
+            </p>
+
+            <div class="btn-group">
+                <a href="javascript:history.back()" class="btn btn-secondary">이전 페이지</a>
+                <a href="/" class="btn btn-primary">홈으로 가기</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 도서 로그. 문제가 지속되면 관리자에게 문의하세요.</p>
+    </footer>
+</body>
+</html>
