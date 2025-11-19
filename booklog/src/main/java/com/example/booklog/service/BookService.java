@@ -30,7 +30,23 @@ public class BookService {
     public List<Book> getBooksByOthers(User user) {
         return bookRepository.findByUserNotOrderByCreatedAtDesc(user);
     }
-    
+
+    // 내 책 + 상태별 조회
+    public List<Book> getBooksByUserAndStatus(User user, String status) {
+        if (status == null || status.equals("ALL")) {
+            return getBooksByUser(user);
+        }
+        return bookRepository.findByUserAndStatusOrderByCreatedAtDesc(user, status);
+    }
+
+    // 다른 사람들의 책 + 상태별 조회
+    public List<Book> getBooksByOthersAndStatus(User user, String status) {
+        if (status == null || status.equals("ALL")) {
+            return getBooksByOthers(user);
+        }
+        return bookRepository.findByUserNotAndStatusOrderByCreatedAtDesc(user, status);
+    }
+
     // 최근 등록순으로 조회
     public List<Book> getRecentBooks() {
         return bookRepository.findAllByOrderByCreatedAtDesc();
@@ -71,19 +87,14 @@ public class BookService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllBooks();
         }
-        
+
         // 제목, 저자, 출판사에서 검색
         List<Book> results = new ArrayList<>();
         results.addAll(bookRepository.findByTitleContaining(keyword));
         results.addAll(bookRepository.findByAuthorContaining(keyword));
         results.addAll(bookRepository.findByPublisherContaining(keyword));
-        
+
         // 중복 제거
         return results.stream().distinct().collect(Collectors.toList());
-    }
-    
-    // 사용자 + 상태별 책 조회
-    public List<Book> getBooksByUserAndStatus(User user, String status) {
-        return bookRepository.findByUserAndStatusOrderByCreatedAtDesc(user, status);
     }
 }

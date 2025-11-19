@@ -293,7 +293,40 @@
 		        justify-content: center;  /* 추가: 큰 화면에서 중앙 */
 		    }
 		}
-   
+
+		/* 상태 선택 드롭다운 스타일 */
+		.status-filter {
+		    display: flex;
+		    align-items: center;
+		    gap: 8px;
+		}
+
+		.status-filter label {
+		    font-size: 14px;
+		    color: #666;
+		    font-weight: 500;
+		}
+
+		.status-filter select {
+		    padding: 8px 12px;
+		    border: 1px solid #e0e0e0;
+		    border-radius: 8px;
+		    background: white;
+		    color: #1a1a1a;
+		    font-size: 14px;
+		    cursor: pointer;
+		    transition: border-color 0.2s;
+		}
+
+		.status-filter select:hover {
+		    border-color: #1a1a1a;
+		}
+
+		.status-filter select:focus {
+		    outline: none;
+		    border-color: #1a1a1a;
+		}
+
     </style>
 </head>
 <body>
@@ -329,14 +362,28 @@
 
 
 		<div class="header-actions">
-    		<div>
-        		<p th:if="${viewMode == 'my'}">내 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
-        		<p th:if="${viewMode == 'others'}">다른 사람들의 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
+    		<div style="display: flex; align-items: center; gap: 20px;">
+        		<div>
+            		<p th:if="${viewMode == 'my'}">내 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
+            		<p th:if="${viewMode == 'others'}">다른 사람들의 책: 총 <strong th:text="${books.size()}">0</strong>권</p>
+        		</div>
+
+        		<!-- 상태 필터 드롭다운 -->
+        		<div class="status-filter">
+            		<label for="statusFilter">상태:</label>
+            		<select id="statusFilter" th:data-viewmode="${viewMode}" th:data-currentstatus="${currentStatus}" onchange="filterByStatus(this.value)">
+                		<option value="ALL" th:selected="${currentStatus == 'ALL'}">전체</option>
+                		<option value="READ" th:selected="${currentStatus == 'READ'}">읽은 책</option>
+                		<option value="READING" th:selected="${currentStatus == 'READING'}">읽고 있는 책</option>
+                		<option value="WANT_TO_READ" th:selected="${currentStatus == 'WANT_TO_READ'}">읽고 싶은 책</option>
+            		</select>
+        		</div>
     		</div>
+
     		<div style="display: flex; gap: 12px;">
         		<!-- 보기 모드 전환 버튼 -->
-        		<a th:if="${viewMode == 'my'}" href="/books/others" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">다른 사람 책 보기</a>
-        		<a th:if="${viewMode == 'others'}" href="/books" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">내 책 보기</a>
+        		<a th:if="${viewMode == 'my'}" th:href="@{/books/others(status=${currentStatus})}" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">다른 사람 책 보기</a>
+        		<a th:if="${viewMode == 'others'}" th:href="@{/books(status=${currentStatus})}" class="btn btn-secondary" style="background: white; color: #1a1a1a; border: 1px solid #e0e0e0;">내 책 보기</a>
 
         		<!-- 내 책 보기 모드일 때만 검색/입력 버튼 표시 -->
         		<th:block th:if="${viewMode == 'my'}">
@@ -345,6 +392,15 @@
         		</th:block>
     		</div>
 		</div>
+
+		<!-- JavaScript for status filter -->
+		<script>
+		function filterByStatus(status) {
+		    const viewMode = document.getElementById('statusFilter').getAttribute('data-viewmode');
+		    const baseUrl = viewMode === 'my' ? '/books' : '/books/others';
+		    window.location.href = baseUrl + '?status=' + status;
+		}
+		</script>
         <div th:if="${books.isEmpty()}" class="empty-message">
             <span th:if="${viewMode == 'my'}">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
             <span th:if="${viewMode == 'others'}">다른 사람들이 등록한 책이 없습니다.</span>

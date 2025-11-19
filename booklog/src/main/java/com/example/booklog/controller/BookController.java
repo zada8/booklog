@@ -42,13 +42,15 @@ public class BookController {
     
     // 내 책 목록 (기본)
     @GetMapping
-    public String list(Model model, Authentication authentication) {
+    public String list(@RequestParam(required = false, defaultValue = "ALL") String status,
+                      Model model,
+                      Authentication authentication) {
         List<Book> books;
 
         // Authentication null 체크
         if (authentication != null) {
             User user = userService.findByUsername(authentication.getName());
-            books = bookService.getBooksByUser(user);
+            books = bookService.getBooksByUserAndStatus(user, status);
             model.addAttribute("currentUsername", authentication.getName());
         } else {
             books = new ArrayList<>();
@@ -57,6 +59,7 @@ public class BookController {
 
         model.addAttribute("books", books);
         model.addAttribute("viewMode", "my"); // 현재 보기 모드
+        model.addAttribute("currentStatus", status); // 현재 선택된 상태
 
         // 사서 추천 도서
         try {
@@ -71,13 +74,15 @@ public class BookController {
 
     // 다른 사람들의 책 목록
     @GetMapping("/others")
-    public String listOthers(Model model, Authentication authentication) {
+    public String listOthers(@RequestParam(required = false, defaultValue = "ALL") String status,
+                            Model model,
+                            Authentication authentication) {
         List<Book> books;
 
         // Authentication null 체크
         if (authentication != null) {
             User user = userService.findByUsername(authentication.getName());
-            books = bookService.getBooksByOthers(user);
+            books = bookService.getBooksByOthersAndStatus(user, status);
             model.addAttribute("currentUsername", authentication.getName());
         } else {
             books = bookService.getAllBooks();
@@ -86,6 +91,7 @@ public class BookController {
 
         model.addAttribute("books", books);
         model.addAttribute("viewMode", "others"); // 현재 보기 모드
+        model.addAttribute("currentStatus", status); // 현재 선택된 상태
 
         // 사서 추천 도서
         try {
