@@ -253,7 +253,8 @@ public class NationalLibraryApiService {
     // ==========================================
     
     /**
-     * 최신 사서 추천 도서 가져오기 (랜덤)
+     * 최신 사서 추천 도서 가져오기 (날짜별 랜덤)
+     * 같은 날에는 같은 책들이 보이고, 다음 날에는 다른 책들이 보임
      */
     public List<RecommendedBookDto> getLatestRecommendedBooks(int count) {
         try {
@@ -279,9 +280,10 @@ public class NationalLibraryApiService {
 
             List<RecommendedBookDto> allBooks = parseRecommendXmlResponse(response);
 
-            // 랜덤으로 섞어서 요청한 개수만큼 반환
+            // 날짜 기반 시드로 랜덤 섞기 (매일 바뀜, 하루 동안은 고정)
             if (allBooks.size() > count) {
-                Collections.shuffle(allBooks);
+                long seed = LocalDate.now().toEpochDay(); // 오늘 날짜를 시드로 사용
+                Collections.shuffle(allBooks, new java.util.Random(seed));
                 return allBooks.subList(0, count);
             }
 
