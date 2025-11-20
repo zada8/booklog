@@ -272,10 +272,12 @@ public class BookController {
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
 
-            // 카테고리를 장르로 자동 매핑
-            if (apiBook.getSubject() != null && !apiBook.getSubject().isEmpty()) {
-                String genre = kakaoApiService.mapCategoryToGenre(apiBook.getSubject());
+            // 국립중앙도서관 API로 주제분류 정보 가져오기
+            BookApiDto nlBook = nlApiService.getBookByIsbn(isbn);
+            if (nlBook != null && nlBook.getSubject() != null && !nlBook.getSubject().isEmpty()) {
+                String genre = kakaoApiService.mapCategoryToGenre(nlBook.getSubject());
                 book.setGenre(genre);
+                System.out.println("국립도서관 SUBJECT: " + nlBook.getSubject() + " -> 장르: " + genre);
             }
         }
         book.setStatus(status);
@@ -309,10 +311,12 @@ public class BookController {
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
 
-            // 카테고리를 장르로 자동 매핑
-            if (apiBook.getSubject() != null && !apiBook.getSubject().isEmpty()) {
-                String genre = kakaoApiService.mapCategoryToGenre(apiBook.getSubject());
+            // 국립중앙도서관 API로 주제분류 정보 가져오기
+            BookApiDto nlBook = nlApiService.getBookByIsbn(isbn);
+            if (nlBook != null && nlBook.getSubject() != null && !nlBook.getSubject().isEmpty()) {
+                String genre = kakaoApiService.mapCategoryToGenre(nlBook.getSubject());
                 book.setGenre(genre);
+                System.out.println("국립도서관 SUBJECT: " + nlBook.getSubject() + " -> 장르: " + genre);
             }
         }
         book.setStatus(status);

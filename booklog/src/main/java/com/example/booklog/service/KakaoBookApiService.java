@@ -164,8 +164,10 @@ public class KakaoBookApiService {
     }
 
     /**
-     * 카카오 API 카테고리를 장르로 매핑
-     * 카테고리 형식: "국내도서>소설>한국소설"
+     * 카테고리/주제분류를 장르로 매핑
+     * 카테고리 형식:
+     * - 카카오: "국내도서>소설>한국소설"
+     * - 국립도서관: "813.7" (KDC), "문학", "소설" 등
      */
     public String mapCategoryToGenre(String category) {
         if (category == null || category.isEmpty()) {
@@ -174,8 +176,57 @@ public class KakaoBookApiService {
 
         String lowerCategory = category.toLowerCase();
 
+        // KDC(한국십진분류법) 숫자 분류 처리
+        if (category.matches("^\\d+.*")) {
+            String kdcCode = category.substring(0, Math.min(3, category.length()));
+
+            // 800번대: 문학
+            if (kdcCode.startsWith("8")) {
+                // 810-820: 한국문학 (소설)
+                if (kdcCode.startsWith("81")) {
+                    return "소설";
+                }
+                // 840: 영미문학
+                if (kdcCode.startsWith("84")) {
+                    return "소설";
+                }
+                // 800번대 전체는 일단 소설로
+                return "소설";
+            }
+
+            // 100번대: 철학
+            if (kdcCode.startsWith("1")) {
+                return "인문";
+            }
+
+            // 300번대: 사회과학
+            if (kdcCode.startsWith("3")) {
+                // 320: 경제
+                if (kdcCode.startsWith("32")) {
+                    return "경제/경영";
+                }
+                return "인문";
+            }
+
+            // 400번대: 자연과학
+            if (kdcCode.startsWith("4")) {
+                return "과학";
+            }
+
+            // 500번대: 기술과학 (컴퓨터 포함)
+            if (kdcCode.startsWith("5")) {
+                return "IT/컴퓨터";
+            }
+
+            // 900번대: 역사
+            if (kdcCode.startsWith("9")) {
+                return "역사";
+            }
+        }
+
+        // 텍스트 기반 분류
         // 소설
-        if (lowerCategory.contains("소설")) {
+        if (lowerCategory.contains("소설") || lowerCategory.contains("문학")) {
             return "소설";
         }
 
@@ -185,13 +236,14 @@ public class KakaoBookApiService {
         }
 
         // 시
-        if (lowerCategory.contains("시") && !lowerCategory.contains("역사")) {
+        if (lowerCategory.contains("시") && !lowerCategory.contains("역사") && !lowerCategory.contains("시대")) {
             return "시";
         }
 
         // 자기계발
         if (lowerCategory.contains("자기계발") || lowerCategory.contains("자기관리") ||
-            lowerCategory.contains("성공") || lowerCategory.contains("동기부여")) {
+            lowerCategory.contains("성공") || lowerCategory.contains("동기부여") ||
+            lowerCategory.contains("자기개발")) {
             return "자기계발";
         }
 
@@ -217,15 +269,15 @@ public class KakaoBookApiService {
         // 과학
         if (lowerCategory.contains("과학") || lowerCategory.contains("수학") ||
             lowerCategory.contains("물리") || lowerCategory.contains("화학") ||
-            lowerCategory.contains("생물")) {
+            lowerCategory.contains("생물") || lowerCategory.contains("자연")) {
             return "과학";
         }
 
         // IT/컴퓨터
         if (lowerCategory.contains("컴퓨터") || lowerCategory.contains("프로그래밍") ||
-            lowerCategory.contains("it/") || lowerCategory.contains("개발") ||
+            lowerCategory.contains("it") || lowerCategory.contains("개발") ||
             lowerCategory.contains("코딩") || lowerCategory.contains("웹") ||
-            lowerCategory.contains("앱")) {
+            lowerCategory.contains("앱") || lowerCategory.contains("소프트웨어")) {
             return "IT/컴퓨터";
         }
 
