@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -487,7 +488,10 @@
 		}
 		</script>
         <div th:if="${books.isEmpty()}" class="empty-message">
-            <span th:if="${viewMode == 'my'}">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
+            <div th:if="${viewMode == 'my'}">
+                <span sec:authorize="isAnonymous()">로그인하고 등록된 책을 확인해보세요!</span>
+                <span sec:authorize="isAuthenticated()">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
+            </div>
             <span th:if="${viewMode == 'others'}">다른 사람들이 등록한 책이 없습니다.</span>
         </div>
         
