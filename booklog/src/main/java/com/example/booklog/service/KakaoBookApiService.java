@@ -145,12 +145,6 @@ public class KakaoBookApiService {
                     book.setDescription(contents.substring(0, Math.min(200, contents.length())) + "...");
                 }
 
-                // 카테고리 (장르로 매핑하기 위해 저장)
-                JSONArray categories = doc.optJSONArray("categories");
-                if (categories != null && categories.length() > 0) {
-                    book.setSubject(categories.getString(0)); // 첫 번째 카테고리 사용
-                }
-
                 System.out.println("책 파싱: " + book.getTitle());
                 books.add(book);
             }
