@@ -335,11 +335,85 @@
     <div class="container">
         <h1>나의 도서 로그</h1>
 
+		<!-- 알라딘 베스트셀러 섹션 -->
+		<div class="recommended-section"
+			th:if="${bestsellers != null && !bestsellers.isEmpty()}">
+			<div class="recommended-header">
+				<h2 class="recommended-title">📚 베스트셀러</h2>
+				<p class="recommended-subtitle">알라딘 베스트셀러 도서</p>
+			</div>
+
+			<div class="recommended-books">
+				<div th:each="book : ${bestsellers}"
+					class="recommended-book aladin-book"
+					style="cursor: pointer;"
+					th:data-isbn="${book.isbn}"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-description="${book.description}"
+					th:data-categoryname="${book.categoryName}"
+					th:data-coverurl="${book.coverUrl}"
+					th:data-pubdate="${book.pubDate}"
+					th:data-pricestandard="${book.priceStandard}"
+					th:data-pricesales="${book.priceSales}"
+					role="button"
+					tabindex="0">
+					<div class="recommended-cover-wrapper">
+						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
+							th:alt="${book.title}" class="recommended-cover">
+						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음
+						</div>
+					</div>
+					<div class="recommended-book-title" th:text="${book.title}">책
+						제목</div>
+					<div class="recommended-book-author" th:text="${book.author}">저자</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 알라딘 신간 도서 섹션 -->
+		<div class="recommended-section"
+			th:if="${newBooks != null && !newBooks.isEmpty()}">
+			<div class="recommended-header">
+				<h2 class="recommended-title">✨ 신간 도서</h2>
+				<p class="recommended-subtitle">따끈따끈한 신간 도서</p>
+			</div>
+
+			<div class="recommended-books">
+				<div th:each="book : ${newBooks}"
+					class="recommended-book aladin-book"
+					style="cursor: pointer;"
+					th:data-isbn="${book.isbn}"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-description="${book.description}"
+					th:data-categoryname="${book.categoryName}"
+					th:data-coverurl="${book.coverUrl}"
+					th:data-pubdate="${book.pubDate}"
+					th:data-pricestandard="${book.priceStandard}"
+					th:data-pricesales="${book.priceSales}"
+					role="button"
+					tabindex="0">
+					<div class="recommended-cover-wrapper">
+						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
+							th:alt="${book.title}" class="recommended-cover">
+						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음
+						</div>
+					</div>
+					<div class="recommended-book-title" th:text="${book.title}">책
+						제목</div>
+					<div class="recommended-book-author" th:text="${book.author}">저자</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- 사서 추천 도서 섹션 -->
 		<div class="recommended-section"
 			th:if="${recommendedBooks != null && !recommendedBooks.isEmpty()}">
 			<div class="recommended-header">
-				<h2 class="recommended-title">국립중앙도서관 사서 추천 도서</h2>
+				<h2 class="recommended-title">📖 국립중앙도서관 사서 추천 도서</h2>
 				<p class="recommended-subtitle">전문 사서가 엄선한 이달의 추천 도서</p>
 			</div>
 
@@ -520,6 +594,71 @@
 
             // 팝업 열기
             window.open(url, 'recommendBookPopup', options);
+        }
+    </script>
+
+    <!-- 알라딘 도서 팝업 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모든 알라딘 도서 카드에 클릭 이벤트 등록
+            const aladinBooks = document.querySelectorAll('.aladin-book[data-isbn]');
+
+            aladinBooks.forEach(function(bookElement) {
+                bookElement.addEventListener('click', function() {
+                    // data 속성에서 책 정보 읽기
+                    const isbn = this.dataset.isbn;
+                    const title = this.dataset.title;
+                    const author = this.dataset.author;
+                    const publisher = this.dataset.publisher;
+                    const description = this.dataset.description;
+                    const categoryName = this.dataset.categoryname;
+                    const coverUrl = this.dataset.coverurl;
+                    const pubDate = this.dataset.pubdate;
+                    const priceStandard = this.dataset.pricestandard;
+                    const priceSales = this.dataset.pricesales;
+
+                    // 팝업 열기
+                    openAladinPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales);
+                });
+
+                // 키보드 접근성 (Enter 키)
+                bookElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.click();
+                    }
+                });
+            });
+        });
+
+        function openAladinPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales) {
+            // URL 파라미터 구성
+            const params = new URLSearchParams({
+                isbn: isbn,
+                title: title,
+                author: author
+            });
+
+            // 선택적 파라미터 추가
+            if (publisher && publisher !== 'null') params.append('publisher', publisher);
+            if (description && description !== 'null') params.append('description', description);
+            if (categoryName && categoryName !== 'null') params.append('categoryName', categoryName);
+            if (coverUrl && coverUrl !== 'null') params.append('coverUrl', coverUrl);
+            if (pubDate && pubDate !== 'null') params.append('pubDate', pubDate);
+            if (priceStandard && priceStandard !== 'null') params.append('priceStandard', priceStandard);
+            if (priceSales && priceSales !== 'null') params.append('priceSales', priceSales);
+
+            // 팝업 URL
+            const url = '/books/aladin-popup?' + params.toString();
+
+            // 팝업 옵션 (작은 창)
+            const width = 650;
+            const height = 750;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const options = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+
+            // 팝업 열기
+            window.open(url, 'aladinBookPopup', options);
         }
     </script>
 </body>
