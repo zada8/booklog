@@ -104,14 +104,25 @@ public class BookController {
         return "books/list";
     }
     
-    /*
     // 새 책 등록 폼
     @GetMapping("/new")
-    public String newBookForm(Model model) {
-        model.addAttribute("book", new Book());
-        return "books/form";
+    public String newBookForm(@RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
+                             Model model) {
+        Book book = new Book();
+        book.setStatus(status);
+        model.addAttribute("book", book);
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (status) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
+        }
     }
-    */
     
  // 책 등록/수정 처리
     @PostMapping
@@ -119,9 +130,22 @@ public class BookController {
                           Authentication authentication,
                           RedirectAttributes redirectAttributes) {
 
+        // 로그인 체크
+        if (authentication == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
         // 새 책 등록
         if (book.getId() == null) {
             User user = userService.findByUsername(authentication.getName());
+
+            // 사용자 조회 실패 체크
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "사용자 정보를 찾을 수 없습니다.");
+                return "redirect:/books";
+            }
+
             book.setUser(user);
 
             // status 기본값 설정
@@ -133,6 +157,7 @@ public class BookController {
             // 폼에서 전달되지 않으면 null로 유지
 
             bookService.saveBook(book);
+            redirectAttributes.addFlashAttribute("message", "책이 등록되었습니다.");
         }
         // 기존 책 수정
         else {
@@ -151,6 +176,7 @@ public class BookController {
 
             book.setUser(existingBook.getUser());
             bookService.saveBook(book);
+            redirectAttributes.addFlashAttribute("message", "책이 수정되었습니다.");
         }
 
         return "redirect:/books";
