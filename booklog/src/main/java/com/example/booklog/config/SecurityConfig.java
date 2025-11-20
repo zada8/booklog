@@ -39,7 +39,7 @@ public class SecurityConfig {
                     "/community/{id}",
                     "/css/**",
                     "/js/**",
-                    "/favicon.png",
+                    "/favicon.ico",
                     "/static/**"
                 ).permitAll()
                 
