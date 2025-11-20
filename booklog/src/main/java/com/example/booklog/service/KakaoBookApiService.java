@@ -144,7 +144,13 @@ public class KakaoBookApiService {
                 if (!contents.isEmpty()) {
                     book.setDescription(contents.substring(0, Math.min(200, contents.length())) + "...");
                 }
-                
+
+                // 카테고리 (장르로 매핑하기 위해 저장)
+                JSONArray categories = doc.optJSONArray("categories");
+                if (categories != null && categories.length() > 0) {
+                    book.setSubject(categories.getString(0)); // 첫 번째 카테고리 사용
+                }
+
                 System.out.println("책 파싱: " + book.getTitle());
                 books.add(book);
             }
@@ -155,5 +161,75 @@ public class KakaoBookApiService {
         }
         
         return books;
+    }
+
+    /**
+     * 카카오 API 카테고리를 장르로 매핑
+     * 카테고리 형식: "국내도서>소설>한국소설"
+     */
+    public String mapCategoryToGenre(String category) {
+        if (category == null || category.isEmpty()) {
+            return "기타";
+        }
+
+        String lowerCategory = category.toLowerCase();
+
+        // 소설
+        if (lowerCategory.contains("소설")) {
+            return "소설";
+        }
+
+        // 에세이
+        if (lowerCategory.contains("에세이") || lowerCategory.contains("수필")) {
+            return "에세이";
+        }
+
+        // 시
+        if (lowerCategory.contains("시") && !lowerCategory.contains("역사")) {
+            return "시";
+        }
+
+        // 자기계발
+        if (lowerCategory.contains("자기계발") || lowerCategory.contains("자기관리") ||
+            lowerCategory.contains("성공") || lowerCategory.contains("동기부여")) {
+            return "자기계발";
+        }
+
+        // 경제/경영
+        if (lowerCategory.contains("경제") || lowerCategory.contains("경영") ||
+            lowerCategory.contains("재테크") || lowerCategory.contains("투자") ||
+            lowerCategory.contains("마케팅") || lowerCategory.contains("비즈니스")) {
+            return "경제/경영";
+        }
+
+        // 인문
+        if (lowerCategory.contains("인문") || lowerCategory.contains("철학") ||
+            lowerCategory.contains("심리") || lowerCategory.contains("사회") ||
+            lowerCategory.contains("교양")) {
+            return "인문";
+        }
+
+        // 역사
+        if (lowerCategory.contains("역사") || lowerCategory.contains("문화")) {
+            return "역사";
+        }
+
+        // 과학
+        if (lowerCategory.contains("과학") || lowerCategory.contains("수학") ||
+            lowerCategory.contains("물리") || lowerCategory.contains("화학") ||
+            lowerCategory.contains("생물")) {
+            return "과학";
+        }
+
+        // IT/컴퓨터
+        if (lowerCategory.contains("컴퓨터") || lowerCategory.contains("프로그래밍") ||
+            lowerCategory.contains("it/") || lowerCategory.contains("개발") ||
+            lowerCategory.contains("코딩") || lowerCategory.contains("웹") ||
+            lowerCategory.contains("앱")) {
+            return "IT/컴퓨터";
+        }
+
+        // 기타
+        return "기타";
     }
 }

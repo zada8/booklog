@@ -271,6 +271,12 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
+
+            // 카테고리를 장르로 자동 매핑
+            if (apiBook.getSubject() != null && !apiBook.getSubject().isEmpty()) {
+                String genre = kakaoApiService.mapCategoryToGenre(apiBook.getSubject());
+                book.setGenre(genre);
+            }
         }
         book.setStatus(status);
 
@@ -302,6 +308,12 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
+
+            // 카테고리를 장르로 자동 매핑
+            if (apiBook.getSubject() != null && !apiBook.getSubject().isEmpty()) {
+                String genre = kakaoApiService.mapCategoryToGenre(apiBook.getSubject());
+                book.setGenre(genre);
+            }
         }
         book.setStatus(status);
 
