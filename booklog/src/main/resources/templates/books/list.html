@@ -329,11 +329,11 @@
 
 		/* AI 추천 도서 섹션 스타일 */
 		.ai-recommended-section {
-		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		    background: white;
 		    padding: 32px;
 		    border-radius: 12px;
 		    margin-bottom: 32px;
-		    border: none;
+		    border: 1px solid #e0e0e0;
 		}
 
 		.ai-recommended-header {
@@ -343,13 +343,13 @@
 		.ai-recommended-title {
 		    font-size: 18px;
 		    font-weight: 600;
-		    color: white;
+		    color: #1a1a1a;
 		    margin-bottom: 8px;
 		}
 
 		.ai-recommended-subtitle {
 		    font-size: 14px;
-		    color: rgba(255, 255, 255, 0.9);
+		    color: #666;
 		}
 
 		.ai-recommended-books {
@@ -359,26 +359,31 @@
 		}
 
 		.ai-recommended-book {
-		    background: white;
-		    border-radius: 12px;
-		    padding: 16px;
 		    text-decoration: none;
 		    color: inherit;
-		    transition: all 0.2s;
+		    transition: transform 0.2s;
 		    display: block;
-		    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		    width: 100%;
+		    max-width: 160px;
 		}
 
 		.ai-recommended-book:hover {
-		    transform: translateY(-6px);
-		    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+		    transform: translateY(-4px);
+		}
+
+		.ai-recommended-book-wrapper {
+		    background: #fafafa;
+		    border: 1px solid #e0e0e0;
+		    border-radius: 8px;
+		    padding: 16px;
+		    height: 100%;
 		}
 
 		.ai-recommended-book-title {
 		    font-size: 14px;
-		    font-weight: 600;
+		    font-weight: 500;
 		    color: #1a1a1a;
-		    margin-bottom: 6px;
+		    margin-bottom: 4px;
 		    overflow: hidden;
 		    text-overflow: ellipsis;
 		    display: -webkit-box;
@@ -398,20 +403,12 @@
 		    white-space: nowrap;
 		}
 
-		.ai-reason-badge {
-		    display: inline-block;
-		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		    color: white;
-		    font-size: 11px;
-		    padding: 4px 10px;
-		    border-radius: 12px;
-		    margin-top: 8px;
-		}
-
 		.ai-reason-text {
-		    font-size: 12px;
-		    color: #666;
+		    font-size: 11px;
+		    color: #999;
 		    margin-top: 8px;
+		    padding-top: 8px;
+		    border-top: 1px solid #e0e0e0;
 		    overflow: hidden;
 		    text-overflow: ellipsis;
 		    display: -webkit-box;
@@ -427,8 +424,12 @@
 		    }
 
 		    .ai-recommended-books {
-		        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 		        gap: 16px;
+		    }
+
+		    .ai-recommended-book {
+		        max-width: 140px;
 		    }
 		}
 
@@ -502,9 +503,11 @@
 					th:data-category="${book.category}"
 					role="button"
 					tabindex="0">
-					<div class="ai-recommended-book-title" th:text="${book.title}">책 제목</div>
-					<div class="ai-recommended-book-author" th:text="${book.author}">저자</div>
-					<div class="ai-reason-text" th:text="${book.reason}">추천 이유</div>
+					<div class="ai-recommended-book-wrapper">
+						<div class="ai-recommended-book-title" th:text="${book.title}">책 제목</div>
+						<div class="ai-recommended-book-author" th:text="${book.author}">저자</div>
+						<div class="ai-reason-text" th:text="${book.reason}">추천 이유</div>
+					</div>
 				</div>
 			</div>
 		</div>
