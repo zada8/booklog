@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.booklog.entity.AiRecommendedBookDto;
 import com.example.booklog.entity.Book;
 import com.example.booklog.entity.BookApiDto;
 import com.example.booklog.entity.RecommendedBookDto;
 import com.example.booklog.entity.User;
+import com.example.booklog.service.AiRecommendationService;
 import com.example.booklog.service.BookService;
 import com.example.booklog.service.KakaoBookApiService;
 import com.example.booklog.service.NationalLibraryApiService;
@@ -39,6 +41,9 @@ public class BookController {
     
     @Autowired
     private NationalLibraryApiService nlApiService;
+
+    @Autowired
+    private AiRecommendationService aiRecommendationService;
     
     // 내 책 목록 (기본)
     @GetMapping
@@ -67,6 +72,19 @@ public class BookController {
             model.addAttribute("recommendedBooks", recommendedBooks);
         } catch (Exception e) {
             model.addAttribute("recommendedBooks", new ArrayList<>());
+        }
+
+        // AI 추천 도서
+        if (authentication != null) {
+            try {
+                User user = userService.findByUsername(authentication.getName());
+                List<AiRecommendedBookDto> aiRecommendedBooks = aiRecommendationService.getRecommendations(user, 5);
+                model.addAttribute("aiRecommendedBooks", aiRecommendedBooks);
+            } catch (Exception e) {
+                model.addAttribute("aiRecommendedBooks", new ArrayList<>());
+            }
+        } else {
+            model.addAttribute("aiRecommendedBooks", new ArrayList<>());
         }
 
         return "books/list";
@@ -99,6 +117,19 @@ public class BookController {
             model.addAttribute("recommendedBooks", recommendedBooks);
         } catch (Exception e) {
             model.addAttribute("recommendedBooks", new ArrayList<>());
+        }
+
+        // AI 추천 도서
+        if (authentication != null) {
+            try {
+                User user = userService.findByUsername(authentication.getName());
+                List<AiRecommendedBookDto> aiRecommendedBooks = aiRecommendationService.getRecommendations(user, 5);
+                model.addAttribute("aiRecommendedBooks", aiRecommendedBooks);
+            } catch (Exception e) {
+                model.addAttribute("aiRecommendedBooks", new ArrayList<>());
+            }
+        } else {
+            model.addAttribute("aiRecommendedBooks", new ArrayList<>());
         }
 
         return "books/list";
@@ -377,5 +408,55 @@ public class BookController {
         text = text.trim();
 
         return text;
+    }
+
+    // AI 추천 도서 팝업 상세 정보
+    @GetMapping("/ai-recommend-popup")
+    public String aiRecommendPopup(@RequestParam String title,
+                                   @RequestParam String author,
+                                   @RequestParam(required = false) String publisher,
+                                   @RequestParam(required = false) String description,
+                                   @RequestParam(required = false) String reason,
+                                   @RequestParam(required = false) String category,
+                                   Model model) {
+        // AiRecommendedBookDto 객체 생성
+        AiRecommendedBookDto book = new AiRecommendedBookDto();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setDescription(description);
+        book.setReason(reason);
+        book.setCategory(category);
+
+        model.addAttribute("book", book);
+        return "books/ai-recommend-popup";
+    }
+
+    // AI 추천 도서에서 등록 폼으로 이동
+    @GetMapping("/new-from-ai-recommend")
+    public String newBookFromAiRecommend(@RequestParam String title,
+                                         @RequestParam String author,
+                                         @RequestParam(required = false) String publisher,
+                                         @RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
+                                         Model model) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setStatus(status);
+
+        model.addAttribute("book", book);
+        model.addAttribute("fromAiRecommend", true);
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (status) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
+        }
     }
 }

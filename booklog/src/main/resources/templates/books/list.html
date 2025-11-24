@@ -327,6 +327,117 @@
 		    border-color: #1a1a1a;
 		}
 
+		/* AI 추천 도서 섹션 스타일 */
+		.ai-recommended-section {
+		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		    padding: 32px;
+		    border-radius: 12px;
+		    margin-bottom: 32px;
+		    border: none;
+		}
+
+		.ai-recommended-header {
+		    margin-bottom: 24px;
+		}
+
+		.ai-recommended-title {
+		    font-size: 18px;
+		    font-weight: 600;
+		    color: white;
+		    margin-bottom: 8px;
+		}
+
+		.ai-recommended-subtitle {
+		    font-size: 14px;
+		    color: rgba(255, 255, 255, 0.9);
+		}
+
+		.ai-recommended-books {
+		    display: grid;
+		    grid-template-columns: repeat(5, 1fr);
+		    gap: 20px;
+		}
+
+		.ai-recommended-book {
+		    background: white;
+		    border-radius: 12px;
+		    padding: 16px;
+		    text-decoration: none;
+		    color: inherit;
+		    transition: all 0.2s;
+		    display: block;
+		    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		}
+
+		.ai-recommended-book:hover {
+		    transform: translateY(-6px);
+		    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+		}
+
+		.ai-recommended-book-title {
+		    font-size: 14px;
+		    font-weight: 600;
+		    color: #1a1a1a;
+		    margin-bottom: 6px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2;
+		    -webkit-box-orient: vertical;
+		    line-height: 1.4;
+		    word-break: keep-all;
+		    min-height: 40px;
+		}
+
+		.ai-recommended-book-author {
+		    font-size: 12px;
+		    color: #666;
+		    margin-bottom: 8px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		}
+
+		.ai-reason-badge {
+		    display: inline-block;
+		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		    color: white;
+		    font-size: 11px;
+		    padding: 4px 10px;
+		    border-radius: 12px;
+		    margin-top: 8px;
+		}
+
+		.ai-reason-text {
+		    font-size: 12px;
+		    color: #666;
+		    margin-top: 8px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2;
+		    -webkit-box-orient: vertical;
+		    line-height: 1.4;
+		}
+
+		/* 반응형 - AI 추천 */
+		@media (max-width: 768px) {
+		    .ai-recommended-section {
+		        padding: 20px;
+		    }
+
+		    .ai-recommended-books {
+		        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		        gap: 16px;
+		    }
+		}
+
+		@media (min-width: 1200px) {
+		    .ai-recommended-books {
+		        justify-content: center;
+		    }
+		}
+
     </style>
 </head>
 <body>
@@ -371,6 +482,32 @@
 			</div>
 		</div>
 
+		<!-- AI 추천 도서 섹션 -->
+		<div class="ai-recommended-section"
+			th:if="${aiRecommendedBooks != null && !aiRecommendedBooks.isEmpty()}">
+			<div class="ai-recommended-header">
+				<h2 class="ai-recommended-title">🤖 AI가 추천하는 책</h2>
+				<p class="ai-recommended-subtitle" th:text="${books.size() >= 3} ? '당신의 독서 취향을 분석했어요' : '지금 인기있는 베스트셀러'">추천 설명</p>
+			</div>
+
+			<div class="ai-recommended-books">
+				<div th:each="book : ${aiRecommendedBooks}"
+					class="ai-recommended-book"
+					style="cursor: pointer;"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-description="${book.description}"
+					th:data-reason="${book.reason}"
+					th:data-category="${book.category}"
+					role="button"
+					tabindex="0">
+					<div class="ai-recommended-book-title" th:text="${book.title}">책 제목</div>
+					<div class="ai-recommended-book-author" th:text="${book.author}">저자</div>
+					<div class="ai-reason-text" th:text="${book.reason}">추천 이유</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="header-actions">
     		<div style="display: flex; align-items: center; gap: 20px;">
@@ -520,6 +657,63 @@
 
             // 팝업 열기
             window.open(url, 'recommendBookPopup', options);
+        }
+    </script>
+
+    <!-- AI 추천 도서 팝업 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모든 AI 추천 도서 카드에 클릭 이벤트 등록
+            const aiRecommendedBooks = document.querySelectorAll('.ai-recommended-book[data-title]');
+
+            aiRecommendedBooks.forEach(function(bookElement) {
+                bookElement.addEventListener('click', function() {
+                    // data 속성에서 책 정보 읽기
+                    const title = this.dataset.title;
+                    const author = this.dataset.author;
+                    const publisher = this.dataset.publisher;
+                    const description = this.dataset.description;
+                    const reason = this.dataset.reason;
+                    const category = this.dataset.category;
+
+                    // 팝업 열기
+                    openAiBookPopup(title, author, publisher, description, reason, category);
+                });
+
+                // 키보드 접근성 (Enter 키)
+                bookElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.click();
+                    }
+                });
+            });
+        });
+
+        function openAiBookPopup(title, author, publisher, description, reason, category) {
+            // URL 파라미터 구성
+            const params = new URLSearchParams({
+                title: title,
+                author: author
+            });
+
+            // 선택적 파라미터 추가
+            if (publisher && publisher !== 'null') params.append('publisher', publisher);
+            if (description && description !== 'null') params.append('description', description);
+            if (reason && reason !== 'null') params.append('reason', reason);
+            if (category && category !== 'null') params.append('category', category);
+
+            // 팝업 URL
+            const url = '/books/ai-recommend-popup?' + params.toString();
+
+            // 팝업 옵션 (작은 창)
+            const width = 650;
+            const height = 750;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const options = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+
+            // 팝업 열기
+            window.open(url, 'aiRecommendBookPopup', options);
         }
     </script>
 </body>
