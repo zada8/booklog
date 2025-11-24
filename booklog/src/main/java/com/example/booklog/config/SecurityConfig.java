@@ -38,7 +38,9 @@ public class SecurityConfig {
                     "/community",
                     "/community/{id}",
                     "/css/**",
-                    "/js/**"
+                    "/js/**",
+                    "/favicon.ico",
+                    "/static/**"
                 ).permitAll()
                 
                 // 로그인 필요

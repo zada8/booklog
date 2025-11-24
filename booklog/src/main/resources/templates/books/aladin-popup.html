@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${book.title} + ' - 사서 추천 도서'">책 상세정보</title>
+    <title th:text="${book.title} + ' - 알라딘 도서'">책 상세정보</title>
     <link rel="icon" href="/favicon.ico">
     <style>
         * {
@@ -122,6 +122,39 @@
             line-height: 1.6;
             flex: 1;
             word-break: break-word;
+        }
+
+        .price-section {
+            background: #fff9e6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid #ffe066;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .price-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .price-value {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .price-standard {
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .price-sales {
+            color: #e65100;
         }
 
         .contents-section {
@@ -286,8 +319,8 @@
 <body>
     <div class="popup-container">
         <div class="popup-header">
-            <h1>사서 추천 도서</h1>
-            <p class="popup-subtitle">국립중앙도서관 추천</p>
+            <h1>알라딘 도서</h1>
+            <p class="popup-subtitle">베스트셀러 & 신간</p>
         </div>
 
         <div class="book-content">
@@ -305,6 +338,18 @@
             <div class="book-title" th:text="${book.title}">책 제목</div>
             <div class="book-author" th:text="${book.author}">저자</div>
 
+            <!-- 가격 정보 -->
+            <div class="price-section" th:if="${book.priceStandard != null && book.priceStandard > 0}">
+                <div class="price-row">
+                    <span class="price-label">정가</span>
+                    <span class="price-value price-standard" th:text="${#numbers.formatInteger(book.priceStandard, 0, 'COMMA')} + '원'">0원</span>
+                </div>
+                <div class="price-row" th:if="${book.priceSales != null && book.priceSales > 0}">
+                    <span class="price-label">판매가</span>
+                    <span class="price-value price-sales" th:text="${#numbers.formatInteger(book.priceSales, 0, 'COMMA')} + '원'">0원</span>
+                </div>
+            </div>
+
             <!-- 상세 정보 -->
             <div class="detail-section">
                 <div class="detail-row" th:if="${book.publisher != null && !book.publisher.isEmpty()}">
@@ -312,9 +357,9 @@
                     <div class="detail-value" th:text="${book.publisher}">출판사</div>
                 </div>
 
-                <div class="detail-row" th:if="${book.publishYear != null}">
-                    <div class="detail-label">발행년도</div>
-                    <div class="detail-value" th:text="${book.publishYear}">발행년도</div>
+                <div class="detail-row" th:if="${book.pubDate != null && !book.pubDate.isEmpty()}">
+                    <div class="detail-label">출판일</div>
+                    <div class="detail-value" th:text="${book.pubDate}">출판일</div>
                 </div>
 
                 <div class="detail-row" th:if="${book.isbn != null && !book.isbn.isEmpty()}">
@@ -322,16 +367,16 @@
                     <div class="detail-value" th:text="${book.isbn}">ISBN</div>
                 </div>
 
-                <div class="detail-row" th:if="${book.category != null && !book.category.isEmpty()}">
+                <div class="detail-row" th:if="${book.categoryName != null && !book.categoryName.isEmpty()}">
                     <div class="detail-label">분류</div>
-                    <div class="detail-value" th:text="${book.category}">분류</div>
+                    <div class="detail-value" th:text="${book.categoryName}">분류</div>
                 </div>
             </div>
 
             <!-- 내용 소개 -->
-            <div class="contents-section" th:if="${book.contents != null && !book.contents.isEmpty()}">
+            <div class="contents-section" th:if="${book.description != null && !book.description.isEmpty()}">
                 <div class="contents-title">책 소개</div>
-                <div class="contents-text" th:text="${book.contents}">책 내용</div>
+                <div class="contents-text" th:text="${book.description}">책 내용</div>
             </div>
 
             <!-- 상태 선택 버튼 -->
@@ -340,15 +385,15 @@
                 <div sec:authorize="isAuthenticated()">
                     <div class="action-title">내 서재에 추가하기</div>
                     <div class="btn-group">
-                        <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='WANT_TO_READ')}"
+                        <a th:href="@{/books/new-from-api(isbn=${book.isbn}, status='WANT_TO_READ')}"
                            class="btn-status btn-status-want"
-                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='WANT_TO_READ')} + '\');'">읽고 싶은 책</a>
-                        <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='READING')}"
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-api(isbn=${book.isbn}, status='WANT_TO_READ')} + '\');'">읽고 싶은 책</a>
+                        <a th:href="@{/books/new-from-api(isbn=${book.isbn}, status='READING')}"
                            class="btn-status btn-status-reading"
-                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='READING')} + '\');'">읽고 있는 책</a>
-                        <a th:href="@{/books/new-from-recommend(isbn=${book.isbn}, status='READ')}"
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-api(isbn=${book.isbn}, status='READING')} + '\');'">읽고 있는 책</a>
+                        <a th:href="@{/books/new-from-api(isbn=${book.isbn}, status='READ')}"
                            class="btn-status btn-status-read"
-                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-recommend(isbn=${book.isbn}, status='READ')} + '\');'">읽은 책</a>
+                           th:onclick="'addBookInParent(event, \'' + @{/books/new-from-api(isbn=${book.isbn}, status='READ')} + '\');'">읽은 책</a>
                     </div>
                 </div>
 

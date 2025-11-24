@@ -2,10 +2,14 @@ package com.example.booklog.controller;
 
 import com.example.booklog.entity.Book;
 import com.example.booklog.entity.User;
+import com.example.booklog.security.CustomUserDetails;
 import com.example.booklog.service.BookService;
 import com.example.booklog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -118,6 +123,24 @@ public class MyPageController {
             }
 
             userService.updateUser(user, name, email, currentPassword, newPassword);
+
+            // SecurityContext 업데이트 (이름 변경 시 헤더에 바로 반영)
+            User updatedUser = userService.findByUsername(authentication.getName());
+            CustomUserDetails updatedUserDetails = new CustomUserDetails(
+                updatedUser.getUsername(),
+                updatedUser.getPassword(),
+                updatedUser.getName(),
+                Collections.singletonList(new SimpleGrantedAuthority(updatedUser.getRole()))
+            );
+
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                updatedUserDetails,
+                updatedUserDetails.getPassword(),
+                updatedUserDetails.getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
             redirectAttributes.addFlashAttribute("success", "정보가 성공적으로 수정되었습니다.");
             return "redirect:/mypage";
 
