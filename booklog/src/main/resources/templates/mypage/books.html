@@ -326,11 +326,11 @@
                     <td th:text="${book.title}">책 제목</td>
                     <td th:text="${book.author}">저자</td>
                     <td th:text="${book.publisher}">출판사</td>
-                    <!-- <td th:text="${book.genre}">장르</td> -->
-                    <td>
+                    <td th:text="${book.genre}">장르</td>
+                    <!-- <td>
                         <span th:class="'status-badge status-' + ${book.status.toLowerCase().replace('_', '-')}"
                               th:text="${book.statusName}">상태</span>
-                    </td>
+                    </td> -->
                     <td th:if="${selectedStatus == 'READ'}">
                         <span class="rating" th:if="${book.rating != null}" th:text="${'⭐'.repeat(book.rating)}">⭐⭐⭐⭐⭐</span>
                         <span th:if="${book.rating == null}">-</span>
