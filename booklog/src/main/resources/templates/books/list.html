@@ -439,6 +439,12 @@
 		    }
 		}
 
+		/* 로딩 스피너 애니메이션 */
+		@keyframes spin {
+		    0% { transform: rotate(0deg); }
+		    100% { transform: rotate(360deg); }
+		}
+
     </style>
 </head>
 <body>
@@ -487,7 +493,7 @@
 		<div class="recommended-section"
 			th:if="${bestsellers != null && !bestsellers.isEmpty()}">
 			<div class="recommended-header">
-				<h2 class="recommended-title">📚 베스트셀러</h2>
+				<h2 class="recommended-title">베스트셀러</h2>
 				<p class="recommended-subtitle">알라딘 베스트셀러 도서</p>
 			</div>
 
@@ -522,7 +528,7 @@
 		<div class="recommended-section"
 			th:if="${newBooks != null && !newBooks.isEmpty()}">
 			<div class="recommended-header">
-				<h2 class="recommended-title">✨ 신간 도서</h2>
+				<h2 class="recommended-title">신간 도서</h2>
 				<p class="recommended-subtitle">따끈따끈한 신간 도서</p>
 			</div>
 
@@ -554,31 +560,25 @@
 		</div>
 
 		<!-- AI 추천 도서 섹션 -->
-		<div class="ai-recommended-section"
-			th:if="${aiRecommendedBooks != null && !aiRecommendedBooks.isEmpty()}">
+		<div class="ai-recommended-section" sec:authorize="isAuthenticated()">
 			<div class="ai-recommended-header">
-				<h2 class="ai-recommended-title">🤖 AI가 추천하는 책</h2>
-				<p class="ai-recommended-subtitle" th:text="${books.size() >= 3} ? '당신의 독서 취향을 분석했어요' : '지금 인기있는 베스트셀러'">추천 설명</p>
+				<h2 class="ai-recommended-title">AI가 추천하는 책</h2>
+				<p class="ai-recommended-subtitle">버튼을 클릭하면 AI가 당신에게 맞는 책을 추천해드립니다</p>
 			</div>
 
-			<div class="ai-recommended-books">
-				<div th:each="book : ${aiRecommendedBooks}"
-					class="ai-recommended-book"
-					style="cursor: pointer;"
-					th:data-title="${book.title}"
-					th:data-author="${book.author}"
-					th:data-publisher="${book.publisher}"
-					th:data-description="${book.description}"
-					th:data-reason="${book.reason}"
-					th:data-category="${book.category}"
-					role="button"
-					tabindex="0">
-					<div class="ai-recommended-book-wrapper">
-						<div class="ai-recommended-book-title" th:text="${book.title}">책 제목</div>
-						<div class="ai-recommended-book-author" th:text="${book.author}">저자</div>
-						<div class="ai-reason-text" th:text="${book.reason}">추천 이유</div>
-					</div>
-				</div>
+			<div id="ai-recommendation-button-wrapper" style="text-align: center; margin: 20px 0;">
+				<button id="get-ai-recommendations-btn" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">
+					AI 추천 받기
+				</button>
+			</div>
+
+			<div id="ai-loading" style="display: none; text-align: center; padding: 20px; color: #666;">
+				<div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid #1a1a1a; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+				<p style="margin-top: 10px;">AI가 추천 도서를 찾고 있습니다...</p>
+			</div>
+
+			<div id="ai-recommended-books" class="ai-recommended-books" style="display: none;">
+				<!-- AJAX로 동적으로 채워집니다 -->
 			</div>
 		</div>
 
@@ -801,6 +801,83 @@
     <!-- AI 추천 도서 팝업 JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // AI 추천 받기 버튼 클릭 이벤트
+            const getAiRecommendationsBtn = document.getElementById('get-ai-recommendations-btn');
+            if (getAiRecommendationsBtn) {
+                getAiRecommendationsBtn.addEventListener('click', function() {
+                    // 버튼 숨기기
+                    document.getElementById('ai-recommendation-button-wrapper').style.display = 'none';
+                    // 로딩 표시
+                    document.getElementById('ai-loading').style.display = 'block';
+
+                    // AJAX 요청
+                    fetch('/books/api/ai-recommendations')
+                        .then(response => response.json())
+                        .then(data => {
+                            // 로딩 숨기기
+                            document.getElementById('ai-loading').style.display = 'none';
+
+                            if (data && data.length > 0) {
+                                // 추천 도서 표시
+                                const container = document.getElementById('ai-recommended-books');
+                                container.innerHTML = '';
+
+                                data.forEach(book => {
+                                    const bookDiv = document.createElement('div');
+                                    bookDiv.className = 'ai-recommended-book';
+                                    bookDiv.style.cursor = 'pointer';
+                                    bookDiv.setAttribute('data-title', book.title);
+                                    bookDiv.setAttribute('data-author', book.author);
+                                    bookDiv.setAttribute('data-publisher', book.publisher || '');
+                                    bookDiv.setAttribute('data-description', book.description || '');
+                                    bookDiv.setAttribute('data-reason', book.reason || '');
+                                    bookDiv.setAttribute('data-category', book.category || '');
+                                    bookDiv.setAttribute('role', 'button');
+                                    bookDiv.setAttribute('tabindex', '0');
+
+                                    bookDiv.innerHTML = `
+                                        <div class="ai-recommended-book-wrapper">
+                                            <div class="ai-recommended-book-title">${book.title}</div>
+                                            <div class="ai-recommended-book-author">${book.author}</div>
+                                            <div class="ai-reason-text">${book.reason || ''}</div>
+                                        </div>
+                                    `;
+
+                                    // 클릭 이벤트 등록
+                                    bookDiv.addEventListener('click', function() {
+                                        openAiBookPopup(
+                                            this.dataset.title,
+                                            this.dataset.author,
+                                            this.dataset.publisher,
+                                            this.dataset.description,
+                                            this.dataset.reason,
+                                            this.dataset.category
+                                        );
+                                    });
+
+                                    // 키보드 접근성
+                                    bookDiv.addEventListener('keypress', function(e) {
+                                        if (e.key === 'Enter') {
+                                            this.click();
+                                        }
+                                    });
+
+                                    container.appendChild(bookDiv);
+                                });
+
+                                container.style.display = 'flex';
+                            } else {
+                                document.getElementById('ai-loading').innerHTML = '<p style="color: #666;">추천할 도서를 찾을 수 없습니다.</p>';
+                                document.getElementById('ai-loading').style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            document.getElementById('ai-loading').innerHTML = '<p style="color: #e74c3c;">AI 추천을 가져오는 중 오류가 발생했습니다.</p>';
+                        });
+                });
+            }
+
             // 모든 AI 추천 도서 카드에 클릭 이벤트 등록
             const aiRecommendedBooks = document.querySelectorAll('.ai-recommended-book[data-title]');
 

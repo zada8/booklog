@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.booklog.entity.AiRecommendedBookDto;
@@ -95,19 +96,6 @@ public class BookController {
             model.addAttribute("newBooks", new ArrayList<>());
         }
 
-        // AI 추천 도서
-        if (authentication != null) {
-            try {
-                User user = userService.findByUsername(authentication.getName());
-                List<AiRecommendedBookDto> aiRecommendedBooks = aiRecommendationService.getRecommendations(user, 5);
-                model.addAttribute("aiRecommendedBooks", aiRecommendedBooks);
-            } catch (Exception e) {
-                model.addAttribute("aiRecommendedBooks", new ArrayList<>());
-            }
-        } else {
-            model.addAttribute("aiRecommendedBooks", new ArrayList<>());
-        }
-
         return "books/list";
     }
 
@@ -154,19 +142,6 @@ public class BookController {
             model.addAttribute("newBooks", newBooks);
         } catch (Exception e) {
             model.addAttribute("newBooks", new ArrayList<>());
-        }
-
-        // AI 추천 도서
-        if (authentication != null) {
-            try {
-                User user = userService.findByUsername(authentication.getName());
-                List<AiRecommendedBookDto> aiRecommendedBooks = aiRecommendationService.getRecommendations(user, 5);
-                model.addAttribute("aiRecommendedBooks", aiRecommendedBooks);
-            } catch (Exception e) {
-                model.addAttribute("aiRecommendedBooks", new ArrayList<>());
-            }
-        } else {
-            model.addAttribute("aiRecommendedBooks", new ArrayList<>());
         }
 
         return "books/list";
@@ -525,5 +500,20 @@ public class BookController {
             default:
                 return "books/want-to-read-form";
         }
+    }
+
+    // AI 추천 도서 AJAX API
+    @GetMapping("/api/ai-recommendations")
+    @ResponseBody
+    public List<AiRecommendedBookDto> getAiRecommendations(Authentication authentication) {
+        if (authentication != null) {
+            try {
+                User user = userService.findByUsername(authentication.getName());
+                return aiRecommendationService.getRecommendations(user, 5);
+            } catch (Exception e) {
+                return new ArrayList<>();
+            }
+        }
+        return new ArrayList<>();
     }
 }
