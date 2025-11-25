@@ -314,6 +314,7 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
+            book.setGenre(apiBook.getSubject());  // 장르 자동 설정
         }
         book.setStatus(status);
 
@@ -345,6 +346,7 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
+            book.setGenre(apiBook.getSubject());  // 장르 자동 설정
         }
         book.setStatus(status);
 
