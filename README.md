@@ -1,51 +1,219 @@
-# booklog
-A personal book log web application built with Spring Boot, JPA, and MySQL
+# 📚 BookLog
 
-## Features
+> 나만의 독서 기록과 AI 기반 책 추천을 한 곳에서
 
-- 📚 개인 독서 기록 관리 (읽은 책, 읽고 있는 책, 읽고 싶은 책)
-- ⭐ 책 평점 및 리뷰 작성
-- 📖 국립중앙도서관 사서 추천 도서
-- 🤖 **AI 기반 개인화 책 추천** (NEW!)
-- 👥 커뮤니티 게시판 (자유, 리뷰, 추천, 독서모임)
-- 🔍 책 검색 (Kakao API 연동)
+Spring Boot 기반의 개인 독서 관리 웹 애플리케이션입니다. 읽은 책을 기록하고, 다양한 추천 시스템을 통해 새로운 책을 발견하세요.
 
-## AI 책 추천 기능 설정
+## ✨ 주요 기능
 
-AI 추천 기능은 **하이브리드 방식**으로 작동합니다:
-- **개인화 추천**: 독서 기록이 3권 이상일 때, 사용자의 취향을 분석하여 맞춤 추천
-- **트렌드 추천**: 독서 기록이 부족할 때, 인기 베스트셀러 추천
+### 📖 독서 기록 관리
+- **읽은 책 / 읽고 있는 책 / 읽고 싶은 책** 상태별 관리
+- 평점(1-5점) 및 리뷰 작성
+- 책 검색을 통한 간편 등록 (Kakao Book API 연동)
+- 다른 사용자의 독서 기록 열람
 
-### OpenAI API 키 설정
+### 🎯 4가지 추천 시스템
 
-1. **OpenAI API 키 발급**
-   - https://platform.openai.com/signup 에서 계정 생성
-   - https://platform.openai.com/api-keys 에서 API 키 발급
+#### 1️⃣ 국립중앙도서관 사서 추천
+전문 사서가 선정한 양질의 도서 추천
 
-2. **application.properties 설정**
-   ```properties
-   # AI 추천 기능 활성화
-   openai.api.key=your-openai-api-key-here
+#### 2️⃣ 베스트셀러
+알라딘 API 기반 실시간 베스트셀러 도서
+
+#### 3️⃣ 신간 도서
+알라딘 API 기반 최신 출간 도서
+
+#### 4️⃣ AI 개인화 추천 (하이브리드)
+- **개인화 모드**: 독서 기록 3권 이상 시, 취향 분석 기반 맞춤 추천
+- **트렌드 모드**: 독서 기록 부족 시, 인기 베스트셀러 추천
+- 버튼 클릭 방식으로 빠른 페이지 로딩 보장
+
+## 🖼️ 실행 화면
+
+### 메인 화면
+<!-- 여기에 메인 화면 캡처 이미지 추가 -->
+![메인 화면](screenshots/main.png)
+
+### AI 추천 기능
+<!-- 여기에 AI 추천 화면 캡처 이미지 추가 -->
+![AI 추천](screenshots/ai-recommendation.png)
+
+### 책 상세 정보
+<!-- 여기에 책 상세 화면 캡처 이미지 추가 -->
+![책 상세](screenshots/book-detail.png)
+
+## 🛠️ 기술 스택
+
+### Backend
+- **Spring Boot** 3.5.7
+- **Spring Data JPA** - 데이터 영속성
+- **Spring Security** - 인증/인가
+- **H2 Database** - 개발 환경
+- **MySQL** - 프로덕션 환경 (선택)
+
+### Frontend
+- **Thymeleaf** - 서버 사이드 템플릿 엔진
+- **HTML/CSS/JavaScript** - 반응형 디자인
+- **AJAX** - 비동기 데이터 로딩
+
+### External APIs
+- **OpenAI GPT-3.5-turbo** - AI 책 추천
+- **국립중앙도서관 API** - 사서 추천 도서
+- **알라딘 API** - 베스트셀러 및 신간 도서
+- **Kakao Book API** - 책 검색
+
+## 🚀 시작하기
+
+### 사전 요구사항
+- Java 17 이상
+- Maven 3.6 이상
+
+### 설치 및 실행
+
+1. **프로젝트 클론**
+   ```bash
+   git clone https://github.com/yourusername/booklog.git
+   cd booklog
    ```
 
-3. **API 사용 요금**
-   - GPT-3.5-turbo 모델 사용
-   - 추천 1회당 약 0.001~0.003 USD (약 1~4원)
-   - 무료 크레딧: 신규 가입 시 $5 제공 (3개월 유효)
+2. **API 키 설정**
 
-### API 키 없이 사용하기
+   `booklog/src/main/resources/application.properties.example` 파일을 복사하여 `application.properties` 생성:
+   ```bash
+   cp booklog/src/main/resources/application.properties.example booklog/src/main/resources/application.properties
+   ```
 
-API 키를 설정하지 않으면:
-- AI 추천 섹션이 자동으로 숨겨집니다
-- 다른 모든 기능은 정상적으로 작동합니다
-- 사서 추천 도서는 계속 사용 가능합니다
+   다음 API 키들을 설정하세요:
+   ```properties
+   # Kakao Book API
+   kakao.api.key=your-kakao-api-key
 
-## 기술 스택
+   # Aladin API
+   aladin.api.key=your-aladin-api-key
 
-- **Backend**: Spring Boot 3.5.7, Spring Data JPA, Spring Security
-- **Frontend**: Thymeleaf, HTML/CSS, JavaScript
-- **Database**: MySQL
-- **External APIs**:
-  - 국립중앙도서관 API (사서 추천)
-  - Kakao Book API (책 검색)
-  - OpenAI API (AI 추천)
+   # OpenAI API (선택 사항)
+   openai.api.key=your-openai-api-key
+   ```
+
+3. **애플리케이션 실행**
+   ```bash
+   cd booklog
+   ./mvnw spring-boot:run
+   ```
+
+4. **브라우저에서 접속**
+   ```
+   http://localhost:8080
+   ```
+
+### API 키 발급 방법
+
+#### 🔑 Kakao Book API
+1. [Kakao Developers](https://developers.kakao.com/) 접속
+2. 애플리케이션 생성
+3. REST API 키 복사
+
+#### 🔑 알라딘 API
+1. [알라딘 OpenAPI](https://blog.aladin.co.kr/openapi/category/39154402) 접속
+2. 회원가입 후 API 키 신청
+3. TTB 키 발급 받기
+
+#### 🔑 OpenAI API (선택)
+1. [OpenAI Platform](https://platform.openai.com/signup) 회원가입
+2. [API Keys](https://platform.openai.com/api-keys) 에서 키 생성
+3. 신규 가입 시 $5 무료 크레딧 제공 (3개월 유효)
+4. GPT-3.5-turbo 사용료: 추천 1회당 약 1~4원
+
+> **참고**: OpenAI API 키가 없어도 다른 모든 기능은 정상 작동합니다.
+
+## 📁 프로젝트 구조
+
+```
+booklog/
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/booklog/
+│   │   │   ├── controller/       # MVC 컨트롤러
+│   │   │   │   ├── BookController.java
+│   │   │   │   └── UserController.java
+│   │   │   ├── entity/            # JPA 엔티티 및 DTO
+│   │   │   │   ├── Book.java
+│   │   │   │   ├── User.java
+│   │   │   │   ├── AiRecommendedBookDto.java
+│   │   │   │   └── AladinBookDto.java
+│   │   │   ├── repository/        # JPA 리포지토리
+│   │   │   ├── service/           # 비즈니스 로직
+│   │   │   │   ├── BookService.java
+│   │   │   │   ├── AiRecommendationService.java
+│   │   │   │   ├── AladinApiService.java
+│   │   │   │   └── NationalLibraryApiService.java
+│   │   │   └── security/          # Spring Security 설정
+│   │   └── resources/
+│   │       ├── templates/         # Thymeleaf 템플릿
+│   │       │   ├── books/
+│   │       │   └── fragments/
+│   │       ├── static/            # 정적 리소스
+│   │       └── application.properties
+│   └── test/                      # 테스트 코드
+└── pom.xml                        # Maven 의존성
+```
+
+## 🎨 주요 기능 상세
+
+### AI 하이브리드 추천 시스템
+
+```java
+// 3권 이상 등록 시
+if (userBooks.size() >= 3) {
+    // 사용자 독서 취향 분석
+    return getPersonalizedRecommendations(user);
+} else {
+    // 트렌드 기반 추천
+    return getTrendingRecommendations();
+}
+```
+
+**개인화 추천 예시**:
+- 사용자가 주로 읽은 장르와 저자 분석
+- 비슷한 테마와 스타일의 책 추천
+- AI가 추천 이유를 함께 제공
+
+**트렌드 추천 예시**:
+- 현재 인기있는 베스트셀러 추천
+- 최신 트렌드 반영
+
+### 성능 최적화
+- **지연 로딩**: AI 추천은 버튼 클릭 시에만 API 호출
+- **병렬 처리**: 사서 추천, 베스트셀러, 신간 도서 동시 로드
+- **예외 처리**: API 오류 시에도 서비스 중단 없음
+
+## 🔐 보안
+
+- Spring Security 기반 인증/인가
+- 비밀번호 BCrypt 암호화
+- CSRF 보호
+- API 키는 `.gitignore`에 포함되어 Git에 업로드되지 않음
+
+## 🤝 기여하기
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 라이센스
+
+This project is licensed under the MIT License
+
+## 👨‍💻 개발자
+
+- GitHub: [@yourusername](https://github.com/yourusername)
+
+## 📧 문의
+
+프로젝트에 대한 질문이나 제안사항이 있으시면 이슈를 등록해주세요.
+
+---
+
+⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요!
