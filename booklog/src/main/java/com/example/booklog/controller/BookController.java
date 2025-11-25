@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.booklog.entity.AiRecommendedBookDto;
+import com.example.booklog.entity.AladinBookDto;
 import com.example.booklog.entity.Book;
 import com.example.booklog.entity.BookApiDto;
 import com.example.booklog.entity.RecommendedBookDto;
 import com.example.booklog.entity.User;
 import com.example.booklog.service.AiRecommendationService;
+import com.example.booklog.service.AladinApiService;
 import com.example.booklog.service.BookService;
 import com.example.booklog.service.KakaoBookApiService;
 import com.example.booklog.service.NationalLibraryApiService;
@@ -43,8 +45,11 @@ public class BookController {
     private NationalLibraryApiService nlApiService;
 
     @Autowired
+    private AladinApiService aladinApiService;
+
+    @Autowired
     private AiRecommendationService aiRecommendationService;
-    
+
     // 내 책 목록 (기본)
     @GetMapping
     public String list(@RequestParam(required = false, defaultValue = "ALL") String status,
@@ -72,6 +77,22 @@ public class BookController {
             model.addAttribute("recommendedBooks", recommendedBooks);
         } catch (Exception e) {
             model.addAttribute("recommendedBooks", new ArrayList<>());
+        }
+
+        // 알라딘 베스트셀러
+        try {
+            List<AladinBookDto> bestsellers = aladinApiService.getBestsellers(5);
+            model.addAttribute("bestsellers", bestsellers);
+        } catch (Exception e) {
+            model.addAttribute("bestsellers", new ArrayList<>());
+        }
+
+        // 알라딘 신간 도서
+        try {
+            List<AladinBookDto> newBooks = aladinApiService.getNewBooks(5);
+            model.addAttribute("newBooks", newBooks);
+        } catch (Exception e) {
+            model.addAttribute("newBooks", new ArrayList<>());
         }
 
         // AI 추천 도서
@@ -119,6 +140,22 @@ public class BookController {
             model.addAttribute("recommendedBooks", new ArrayList<>());
         }
 
+        // 알라딘 베스트셀러
+        try {
+            List<AladinBookDto> bestsellers = aladinApiService.getBestsellers(5);
+            model.addAttribute("bestsellers", bestsellers);
+        } catch (Exception e) {
+            model.addAttribute("bestsellers", new ArrayList<>());
+        }
+
+        // 알라딘 신간 도서
+        try {
+            List<AladinBookDto> newBooks = aladinApiService.getNewBooks(5);
+            model.addAttribute("newBooks", newBooks);
+        } catch (Exception e) {
+            model.addAttribute("newBooks", new ArrayList<>());
+        }
+
         // AI 추천 도서
         if (authentication != null) {
             try {
@@ -134,7 +171,7 @@ public class BookController {
 
         return "books/list";
     }
-    
+
     // 새 책 등록 폼
     @GetMapping("/new")
     public String newBookForm(@RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
@@ -430,6 +467,36 @@ public class BookController {
 
         model.addAttribute("book", book);
         return "books/ai-recommend-popup";
+    }
+
+    // 알라딘 도서 팝업 상세 정보
+    @GetMapping("/aladin-popup")
+    public String aladinPopup(@RequestParam String isbn,
+                              @RequestParam String title,
+                              @RequestParam String author,
+                              @RequestParam(required = false) String publisher,
+                              @RequestParam(required = false) String description,
+                              @RequestParam(required = false) String categoryName,
+                              @RequestParam(required = false) String coverUrl,
+                              @RequestParam(required = false) String pubDate,
+                              @RequestParam(required = false) Integer priceStandard,
+                              @RequestParam(required = false) Integer priceSales,
+                              Model model) {
+        // AladinBookDto 객체 생성
+        AladinBookDto book = new AladinBookDto();
+        book.setIsbn(isbn);
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setDescription(description);
+        book.setCategoryName(categoryName);
+        book.setCoverUrl(coverUrl);
+        book.setPubDate(pubDate);
+        book.setPriceStandard(priceStandard);
+        book.setPriceSales(priceSales);
+
+        model.addAttribute("book", book);
+        return "books/aladin-popup";
     }
 
     // AI 추천 도서에서 등록 폼으로 이동
