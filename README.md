@@ -28,14 +28,35 @@ Spring Boot 기반의 개인 독서 관리 웹 애플리케이션입니다. 읽�
 - **트렌드 모드**: 독서 기록 부족 시, 인기 베스트셀러 추천
 - 버튼 클릭 방식으로 빠른 페이지 로딩 보장
 
+### 독서 커뮤니티
+- 자유게시판
+- 책 리뷰
+- 책 추천 요청
+- 독서 모임
+
+## 실행 화면
+
+|랜딩 페이지|회원가입 및 로그인|
+|:---:|:---:|
+|![Image](https://github.com/user-attachments/assets/4becfdc3-10e7-462d-b6db-58ff00e0c947)|![Image](https://github.com/user-attachments/assets/44760454-1c4d-4463-8a6b-4d7f56647776)|
+|메인 페이지|책 검색 및 읽은 책 등록|
+|![Image](https://github.com/user-attachments/assets/b5ec99f8-dc88-4589-8f1d-399667c9c785)|![Image](https://github.com/user-attachments/assets/cbebce97-9082-421a-9454-79a242ffefed)|
+|추천 도서에서 책 등록|읽고 싶은 책, 읽고 있는 책 등록|
+|![Image](https://github.com/user-attachments/assets/db365007-8be9-4ae2-a20e-0fbb5eb097ee)|![Image](https://github.com/user-attachments/assets/7ff37180-4f4d-4988-86c9-3bfbff3a76a4)|
+|AI 추천|마이 페이지|
+|![Image](https://github.com/user-attachments/assets/438cfb6e-123d-4c74-b046-db3c6badfef6)|![Image](https://github.com/user-attachments/assets/cce10fe0-891d-4033-b58d-3f7f68c5308f)|
+|커뮤니티|
+|![Image](https://github.com/user-attachments/assets/3f995764-75ff-49d2-8040-3bf89b609c10)|
+
+
+
 ## 기술 스택
 
 ### Backend
 - **Spring Boot** 3.5.7
 - **Spring Data JPA** - 데이터 영속성
 - **Spring Security** - 인증/인가
-- **H2 Database** - 개발 환경
-- **MySQL** - 프로덕션 환경 (선택)
+- **MySQL** 
 
 ### Frontend
 - **Thymeleaf** - 서버 사이드 템플릿 엔진
@@ -58,7 +79,7 @@ Spring Boot 기반의 개인 독서 관리 웹 애플리케이션입니다. 읽�
 
 1. **프로젝트 클론**
    ```bash
-   git clone https://github.com/yourusername/booklog.git
+   git clone https://github.com/zada8/booklog.git
    cd booklog
    ```
 
@@ -92,7 +113,7 @@ Spring Boot 기반의 개인 독서 관리 웹 애플리케이션입니다. 읽�
    http://localhost:8080
    ```
 
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 booklog/
@@ -168,9 +189,3 @@ if (userBooks.size() >= 3) {
 - Email: qqaz0609@naver.com
 
 
-
-프로젝트에 대한 질문이나 제안사항이 있으시면 이슈를 등록해주세요.
-
----
-
-⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요!
