@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.booklog.entity.AiRecommendedBookDto;
 import com.example.booklog.entity.AladinBookDto;
 import com.example.booklog.entity.Book;
 import com.example.booklog.entity.BookApiDto;
 import com.example.booklog.entity.RecommendedBookDto;
 import com.example.booklog.entity.User;
+import com.example.booklog.service.AiRecommendationService;
 import com.example.booklog.service.AladinApiService;
 import com.example.booklog.service.BookService;
 import com.example.booklog.service.KakaoBookApiService;
@@ -44,6 +47,9 @@ public class BookController {
 
     @Autowired
     private AladinApiService aladinApiService;
+
+    @Autowired
+    private AiRecommendationService aiRecommendationService;
 
     // 내 책 목록 (기본)
     @GetMapping
@@ -140,7 +146,7 @@ public class BookController {
 
         return "books/list";
     }
-    
+
     // 새 책 등록 폼
     @GetMapping("/new")
     public String newBookForm(@RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
@@ -308,14 +314,7 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
-
-            // 국립중앙도서관 API로 주제분류 정보 가져오기
-            BookApiDto nlBook = nlApiService.getBookByIsbn(isbn);
-            if (nlBook != null && nlBook.getSubject() != null && !nlBook.getSubject().isEmpty()) {
-                String genre = kakaoApiService.mapCategoryToGenre(nlBook.getSubject());
-                book.setGenre(genre);
-                System.out.println("국립도서관 SUBJECT: " + nlBook.getSubject() + " -> 장르: " + genre);
-            }
+            book.setGenre(apiBook.getSubject());  // 장르 자동 설정
         }
         book.setStatus(status);
 
@@ -347,14 +346,7 @@ public class BookController {
             book.setTitle(apiBook.getTitle());
             book.setAuthor(apiBook.getAuthor());
             book.setPublisher(apiBook.getPublisher());
-
-            // 국립중앙도서관 API로 주제분류 정보 가져오기
-            BookApiDto nlBook = nlApiService.getBookByIsbn(isbn);
-            if (nlBook != null && nlBook.getSubject() != null && !nlBook.getSubject().isEmpty()) {
-                String genre = kakaoApiService.mapCategoryToGenre(nlBook.getSubject());
-                book.setGenre(genre);
-                System.out.println("국립도서관 SUBJECT: " + nlBook.getSubject() + " -> 장르: " + genre);
-            }
+            book.setGenre(apiBook.getSubject());  // 장르 자동 설정
         }
         book.setStatus(status);
 
@@ -406,6 +398,54 @@ public class BookController {
         return "books/recommend-popup";
     }
 
+    // HTML 태그 제거 유틸리티 메서드
+    private String removeHtmlTags(String html) {
+        if (html == null || html.isEmpty()) {
+            return html;
+        }
+
+        // HTML 태그 제거
+        String text = html.replaceAll("<[^>]*>", "");
+
+        // HTML 엔티티 디코딩
+        text = text.replace("&nbsp;", " ")
+                   .replace("&quot;", "\"")
+                   .replace("&apos;", "'")
+                   .replace("&lt;", "<")
+                   .replace("&gt;", ">")
+                   .replace("&amp;", "&");
+
+        // 연속된 공백을 하나로 축소
+        text = text.replaceAll("\\s+", " ");
+
+        // 앞뒤 공백 제거
+        text = text.trim();
+
+        return text;
+    }
+
+    // AI 추천 도서 팝업 상세 정보
+    @GetMapping("/ai-recommend-popup")
+    public String aiRecommendPopup(@RequestParam String title,
+                                   @RequestParam String author,
+                                   @RequestParam(required = false) String publisher,
+                                   @RequestParam(required = false) String description,
+                                   @RequestParam(required = false) String reason,
+                                   @RequestParam(required = false) String category,
+                                   Model model) {
+        // AiRecommendedBookDto 객체 생성
+        AiRecommendedBookDto book = new AiRecommendedBookDto();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setDescription(description);
+        book.setReason(reason);
+        book.setCategory(category);
+
+        model.addAttribute("book", book);
+        return "books/ai-recommend-popup";
+    }
+
     // 알라딘 도서 팝업 상세 정보
     @GetMapping("/aladin-popup")
     public String aladinPopup(@RequestParam String isbn,
@@ -436,29 +476,46 @@ public class BookController {
         return "books/aladin-popup";
     }
 
-    // HTML 태그 제거 유틸리티 메서드
-    private String removeHtmlTags(String html) {
-        if (html == null || html.isEmpty()) {
-            return html;
+    // AI 추천 도서에서 등록 폼으로 이동
+    @GetMapping("/new-from-ai-recommend")
+    public String newBookFromAiRecommend(@RequestParam String title,
+                                         @RequestParam String author,
+                                         @RequestParam(required = false) String publisher,
+                                         @RequestParam(required = false, defaultValue = "WANT_TO_READ") String status,
+                                         Model model) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setStatus(status);
+
+        model.addAttribute("book", book);
+        model.addAttribute("fromAiRecommend", true);
+
+        // 상태에 따라 다른 폼으로 이동
+        switch (status) {
+            case "READ":
+                return "books/read-form";
+            case "READING":
+                return "books/reading-form";
+            case "WANT_TO_READ":
+            default:
+                return "books/want-to-read-form";
         }
+    }
 
-        // HTML 태그 제거
-        String text = html.replaceAll("<[^>]*>", "");
-
-        // HTML 엔티티 디코딩
-        text = text.replace("&nbsp;", " ")
-                   .replace("&quot;", "\"")
-                   .replace("&apos;", "'")
-                   .replace("&lt;", "<")
-                   .replace("&gt;", ">")
-                   .replace("&amp;", "&");
-
-        // 연속된 공백을 하나로 축소
-        text = text.replaceAll("\\s+", " ");
-
-        // 앞뒤 공백 제거
-        text = text.trim();
-
-        return text;
+    // AI 추천 도서 AJAX API
+    @GetMapping("/api/ai-recommendations")
+    @ResponseBody
+    public List<AiRecommendedBookDto> getAiRecommendations(Authentication authentication) {
+        if (authentication != null) {
+            try {
+                User user = userService.findByUsername(authentication.getName());
+                return aiRecommendationService.getRecommendations(user, 5);
+            } catch (Exception e) {
+                return new ArrayList<>();
+            }
+        }
+        return new ArrayList<>();
     }
 }

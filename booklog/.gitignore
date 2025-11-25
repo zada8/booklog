@@ -1,1 +1,5 @@
 /target/
+
+# 민감한 설정 파일 (API 키, DB 비밀번호 등)
+application.properties
+application-*.properties

@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도서 로그 - 책 목록</title>
-    <link rel="icon" href="/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -329,6 +327,124 @@
 		    border-color: #1a1a1a;
 		}
 
+		/* AI 추천 도서 섹션 스타일 */
+		.ai-recommended-section {
+		    background: white;
+		    padding: 32px;
+		    border-radius: 12px;
+		    margin-bottom: 32px;
+		    border: 1px solid #e0e0e0;
+		}
+
+		.ai-recommended-header {
+		    margin-bottom: 24px;
+		}
+
+		.ai-recommended-title {
+		    font-size: 18px;
+		    font-weight: 600;
+		    color: #1a1a1a;
+		    margin-bottom: 8px;
+		}
+
+		.ai-recommended-subtitle {
+		    font-size: 14px;
+		    color: #666;
+		}
+
+		.ai-recommended-books {
+		    display: grid;
+		    grid-template-columns: repeat(5, 1fr);
+		    gap: 20px;
+		}
+
+		.ai-recommended-book {
+		    text-decoration: none;
+		    color: inherit;
+		    transition: transform 0.2s;
+		    display: block;
+		    width: 100%;
+		    max-width: 160px;
+		}
+
+		.ai-recommended-book:hover {
+		    transform: translateY(-4px);
+		}
+
+		.ai-recommended-book-wrapper {
+		    background: #fafafa;
+		    border: 1px solid #e0e0e0;
+		    border-radius: 8px;
+		    padding: 16px;
+		    height: 100%;
+		}
+
+		.ai-recommended-book-title {
+		    font-size: 14px;
+		    font-weight: 500;
+		    color: #1a1a1a;
+		    margin-bottom: 4px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2;
+		    -webkit-box-orient: vertical;
+		    line-height: 1.4;
+		    word-break: keep-all;
+		    min-height: 40px;
+		}
+
+		.ai-recommended-book-author {
+		    font-size: 12px;
+		    color: #666;
+		    margin-bottom: 8px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		}
+
+		.ai-reason-text {
+		    font-size: 11px;
+		    color: #999;
+		    margin-top: 8px;
+		    padding-top: 8px;
+		    border-top: 1px solid #e0e0e0;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2;
+		    -webkit-box-orient: vertical;
+		    line-height: 1.4;
+		}
+
+		/* 반응형 - AI 추천 */
+		@media (max-width: 768px) {
+		    .ai-recommended-section {
+		        padding: 20px;
+		    }
+
+		    .ai-recommended-books {
+		        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+		        gap: 16px;
+		    }
+
+		    .ai-recommended-book {
+		        max-width: 140px;
+		    }
+		}
+
+		@media (min-width: 1200px) {
+		    .ai-recommended-books {
+		        justify-content: center;
+		    }
+		}
+
+		/* 로딩 스피너 애니메이션 */
+		@keyframes spin {
+		    0% { transform: rotate(0deg); }
+		    100% { transform: rotate(360deg); }
+		}
+
     </style>
 </head>
 <body>
@@ -336,80 +452,6 @@
     
     <div class="container">
         <h1>나의 도서 로그</h1>
-
-		<!-- 알라딘 베스트셀러 섹션 -->
-		<div class="recommended-section"
-			th:if="${bestsellers != null && !bestsellers.isEmpty()}">
-			<div class="recommended-header">
-				<h2 class="recommended-title">베스트셀러</h2>
-				<p class="recommended-subtitle">알라딘 베스트셀러 도서</p>
-			</div>
-
-			<div class="recommended-books">
-				<div th:each="book : ${bestsellers}"
-					class="recommended-book aladin-book"
-					style="cursor: pointer;"
-					th:data-isbn="${book.isbn}"
-					th:data-title="${book.title}"
-					th:data-author="${book.author}"
-					th:data-publisher="${book.publisher}"
-					th:data-description="${book.description}"
-					th:data-categoryname="${book.categoryName}"
-					th:data-coverurl="${book.coverUrl}"
-					th:data-pubdate="${book.pubDate}"
-					th:data-pricestandard="${book.priceStandard}"
-					th:data-pricesales="${book.priceSales}"
-					role="button"
-					tabindex="0">
-					<div class="recommended-cover-wrapper">
-						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
-							th:alt="${book.title}" class="recommended-cover">
-						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음
-						</div>
-					</div>
-					<div class="recommended-book-title" th:text="${book.title}">책
-						제목</div>
-					<div class="recommended-book-author" th:text="${book.author}">저자</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- 알라딘 신간 도서 섹션 -->
-		<div class="recommended-section"
-			th:if="${newBooks != null && !newBooks.isEmpty()}">
-			<div class="recommended-header">
-				<h2 class="recommended-title">신간 도서</h2>
-				<p class="recommended-subtitle">따끈따끈한 신간 도서</p>
-			</div>
-
-			<div class="recommended-books">
-				<div th:each="book : ${newBooks}"
-					class="recommended-book aladin-book"
-					style="cursor: pointer;"
-					th:data-isbn="${book.isbn}"
-					th:data-title="${book.title}"
-					th:data-author="${book.author}"
-					th:data-publisher="${book.publisher}"
-					th:data-description="${book.description}"
-					th:data-categoryname="${book.categoryName}"
-					th:data-coverurl="${book.coverUrl}"
-					th:data-pubdate="${book.pubDate}"
-					th:data-pricestandard="${book.priceStandard}"
-					th:data-pricesales="${book.priceSales}"
-					role="button"
-					tabindex="0">
-					<div class="recommended-cover-wrapper">
-						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
-							th:alt="${book.title}" class="recommended-cover">
-						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음
-						</div>
-					</div>
-					<div class="recommended-book-title" th:text="${book.title}">책
-						제목</div>
-					<div class="recommended-book-author" th:text="${book.author}">저자</div>
-				</div>
-			</div>
-		</div>
 
 		<!-- 사서 추천 도서 섹션 -->
 		<div class="recommended-section"
@@ -447,6 +489,98 @@
 			</div>
 		</div>
 
+		<!-- 알라딘 베스트셀러 섹션 -->
+		<div class="recommended-section"
+			th:if="${bestsellers != null && !bestsellers.isEmpty()}">
+			<div class="recommended-header">
+				<h2 class="recommended-title">베스트셀러</h2>
+				<p class="recommended-subtitle">알라딘 베스트셀러 도서</p>
+			</div>
+
+			<div class="recommended-books">
+				<div th:each="book : ${bestsellers}"
+					class="recommended-book aladin-book"
+					style="cursor: pointer;"
+					th:data-isbn="${book.isbn}"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-description="${book.description}"
+					th:data-categoryname="${book.categoryName}"
+					th:data-coverurl="${book.coverUrl}"
+					th:data-pubdate="${book.pubDate}"
+					th:data-pricestandard="${book.priceStandard}"
+					th:data-pricesales="${book.priceSales}"
+					role="button"
+					tabindex="0">
+					<div class="recommended-cover-wrapper">
+						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
+							th:alt="${book.title}" class="recommended-cover">
+						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음</div>
+					</div>
+					<div class="recommended-book-title" th:text="${book.title}">책 제목</div>
+					<div class="recommended-book-author" th:text="${book.author}">저자</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 알라딘 신간 도서 섹션 -->
+		<div class="recommended-section"
+			th:if="${newBooks != null && !newBooks.isEmpty()}">
+			<div class="recommended-header">
+				<h2 class="recommended-title">신간 도서</h2>
+				<p class="recommended-subtitle">따끈따끈한 신간 도서</p>
+			</div>
+
+			<div class="recommended-books">
+				<div th:each="book : ${newBooks}"
+					class="recommended-book aladin-book"
+					style="cursor: pointer;"
+					th:data-isbn="${book.isbn}"
+					th:data-title="${book.title}"
+					th:data-author="${book.author}"
+					th:data-publisher="${book.publisher}"
+					th:data-description="${book.description}"
+					th:data-categoryname="${book.categoryName}"
+					th:data-coverurl="${book.coverUrl}"
+					th:data-pubdate="${book.pubDate}"
+					th:data-pricestandard="${book.priceStandard}"
+					th:data-pricesales="${book.priceSales}"
+					role="button"
+					tabindex="0">
+					<div class="recommended-cover-wrapper">
+						<img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}"
+							th:alt="${book.title}" class="recommended-cover">
+						<div th:if="${book.coverUrl == null}" class="no-cover">표지없음</div>
+					</div>
+					<div class="recommended-book-title" th:text="${book.title}">책 제목</div>
+					<div class="recommended-book-author" th:text="${book.author}">저자</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- AI 추천 도서 섹션 -->
+		<div class="ai-recommended-section" sec:authorize="isAuthenticated()">
+			<div class="ai-recommended-header">
+				<h2 class="ai-recommended-title">AI가 추천하는 책</h2>
+				<p class="ai-recommended-subtitle">버튼을 클릭하면 AI가 당신에게 맞는 책을 추천해드립니다</p>
+			</div>
+
+			<div id="ai-recommendation-button-wrapper" style="text-align: center; margin: 20px 0;">
+				<button id="get-ai-recommendations-btn" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">
+					AI 추천 받기
+				</button>
+			</div>
+
+			<div id="ai-loading" style="display: none; text-align: center; padding: 20px; color: #666;">
+				<div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid #1a1a1a; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+				<p style="margin-top: 10px;">AI가 추천 도서를 찾고 있습니다...</p>
+			</div>
+
+			<div id="ai-recommended-books" class="ai-recommended-books" style="display: none;">
+				<!-- AJAX로 동적으로 채워집니다 -->
+			</div>
+		</div>
 
 		<div class="header-actions">
     		<div style="display: flex; align-items: center; gap: 20px;">
@@ -489,10 +623,7 @@
 		}
 		</script>
         <div th:if="${books.isEmpty()}" class="empty-message">
-            <div th:if="${viewMode == 'my'}">
-                <span sec:authorize="isAnonymous()">로그인하고 등록된 책을 확인해보세요!</span>
-                <span sec:authorize="isAuthenticated()">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
-            </div>
+            <span th:if="${viewMode == 'my'}">등록된 책이 없습니다. 첫 번째 책을 등록해보세요!</span>
             <span th:if="${viewMode == 'others'}">다른 사람들이 등록한 책이 없습니다.</span>
         </div>
         
@@ -623,7 +754,7 @@
                     const priceSales = this.dataset.pricesales;
 
                     // 팝업 열기
-                    openAladinPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales);
+                    openAladinBookPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales);
                 });
 
                 // 키보드 접근성 (Enter 키)
@@ -635,7 +766,7 @@
             });
         });
 
-        function openAladinPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales) {
+        function openAladinBookPopup(isbn, title, author, publisher, description, categoryName, coverUrl, pubDate, priceStandard, priceSales) {
             // URL 파라미터 구성
             const params = new URLSearchParams({
                 isbn: isbn,
@@ -664,6 +795,140 @@
 
             // 팝업 열기
             window.open(url, 'aladinBookPopup', options);
+        }
+    </script>
+
+    <!-- AI 추천 도서 팝업 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // AI 추천 받기 버튼 클릭 이벤트
+            const getAiRecommendationsBtn = document.getElementById('get-ai-recommendations-btn');
+            if (getAiRecommendationsBtn) {
+                getAiRecommendationsBtn.addEventListener('click', function() {
+                    // 버튼 숨기기
+                    document.getElementById('ai-recommendation-button-wrapper').style.display = 'none';
+                    // 로딩 표시
+                    document.getElementById('ai-loading').style.display = 'block';
+
+                    // AJAX 요청
+                    fetch('/books/api/ai-recommendations')
+                        .then(response => response.json())
+                        .then(data => {
+                            // 로딩 숨기기
+                            document.getElementById('ai-loading').style.display = 'none';
+
+                            if (data && data.length > 0) {
+                                // 추천 도서 표시
+                                const container = document.getElementById('ai-recommended-books');
+                                container.innerHTML = '';
+
+                                data.forEach(book => {
+                                    const bookDiv = document.createElement('div');
+                                    bookDiv.className = 'ai-recommended-book';
+                                    bookDiv.style.cursor = 'pointer';
+                                    bookDiv.setAttribute('data-title', book.title);
+                                    bookDiv.setAttribute('data-author', book.author);
+                                    bookDiv.setAttribute('data-publisher', book.publisher || '');
+                                    bookDiv.setAttribute('data-description', book.description || '');
+                                    bookDiv.setAttribute('data-reason', book.reason || '');
+                                    bookDiv.setAttribute('data-category', book.category || '');
+                                    bookDiv.setAttribute('role', 'button');
+                                    bookDiv.setAttribute('tabindex', '0');
+
+                                    bookDiv.innerHTML = `
+                                        <div class="ai-recommended-book-wrapper">
+                                            <div class="ai-recommended-book-title">${book.title}</div>
+                                            <div class="ai-recommended-book-author">${book.author}</div>
+                                            <div class="ai-reason-text">${book.reason || ''}</div>
+                                        </div>
+                                    `;
+
+                                    // 클릭 이벤트 등록
+                                    bookDiv.addEventListener('click', function() {
+                                        openAiBookPopup(
+                                            this.dataset.title,
+                                            this.dataset.author,
+                                            this.dataset.publisher,
+                                            this.dataset.description,
+                                            this.dataset.reason,
+                                            this.dataset.category
+                                        );
+                                    });
+
+                                    // 키보드 접근성
+                                    bookDiv.addEventListener('keypress', function(e) {
+                                        if (e.key === 'Enter') {
+                                            this.click();
+                                        }
+                                    });
+
+                                    container.appendChild(bookDiv);
+                                });
+
+                                container.style.display = 'flex';
+                            } else {
+                                document.getElementById('ai-loading').innerHTML = '<p style="color: #666;">추천할 도서를 찾을 수 없습니다.</p>';
+                                document.getElementById('ai-loading').style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            document.getElementById('ai-loading').innerHTML = '<p style="color: #e74c3c;">AI 추천을 가져오는 중 오류가 발생했습니다.</p>';
+                        });
+                });
+            }
+
+            // 모든 AI 추천 도서 카드에 클릭 이벤트 등록
+            const aiRecommendedBooks = document.querySelectorAll('.ai-recommended-book[data-title]');
+
+            aiRecommendedBooks.forEach(function(bookElement) {
+                bookElement.addEventListener('click', function() {
+                    // data 속성에서 책 정보 읽기
+                    const title = this.dataset.title;
+                    const author = this.dataset.author;
+                    const publisher = this.dataset.publisher;
+                    const description = this.dataset.description;
+                    const reason = this.dataset.reason;
+                    const category = this.dataset.category;
+
+                    // 팝업 열기
+                    openAiBookPopup(title, author, publisher, description, reason, category);
+                });
+
+                // 키보드 접근성 (Enter 키)
+                bookElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.click();
+                    }
+                });
+            });
+        });
+
+        function openAiBookPopup(title, author, publisher, description, reason, category) {
+            // URL 파라미터 구성
+            const params = new URLSearchParams({
+                title: title,
+                author: author
+            });
+
+            // 선택적 파라미터 추가
+            if (publisher && publisher !== 'null') params.append('publisher', publisher);
+            if (description && description !== 'null') params.append('description', description);
+            if (reason && reason !== 'null') params.append('reason', reason);
+            if (category && category !== 'null') params.append('category', category);
+
+            // 팝업 URL
+            const url = '/books/ai-recommend-popup?' + params.toString();
+
+            // 팝업 옵션 (작은 창)
+            const width = 650;
+            const height = 750;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const options = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+
+            // 팝업 열기
+            window.open(url, 'aiRecommendBookPopup', options);
         }
     </script>
 </body>
