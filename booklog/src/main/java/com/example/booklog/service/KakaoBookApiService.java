@@ -145,7 +145,11 @@ public class KakaoBookApiService {
                     book.setDescription(contents.substring(0, Math.min(200, contents.length())) + "...");
                 }
 
-                System.out.println("책 파싱: " + book.getTitle());
+                // 장르 추측 (카카오 API에 카테고리 정보가 없으므로 제목/내용으로 추측)
+                String genre = inferGenreFromTitleAndContent(book.getTitle(), contents);
+                book.setSubject(genre);
+
+                System.out.println("책 파싱: " + book.getTitle() + " / 장르: " + genre);
                 books.add(book);
             }
             
@@ -155,6 +159,61 @@ public class KakaoBookApiService {
         }
         
         return books;
+    }
+
+    /**
+     * 제목과 내용으로 장르 추측
+     */
+    private String inferGenreFromTitleAndContent(String title, String content) {
+        String text = (title + " " + content).toLowerCase();
+
+        // 소설 관련 키워드
+        if (text.matches(".*(소설|이야기|장편|단편|novel).*")) {
+            return "소설";
+        }
+
+        // 에세이 관련 키워드
+        if (text.matches(".*(에세이|수필|산문|일상|기록).*")) {
+            return "에세이";
+        }
+
+        // 자기계발 관련 키워드
+        if (text.matches(".*(자기계발|성공|습관|동기부여|자존감|행복|마음|심리|치유).*")) {
+            return "자기계발";
+        }
+
+        // 경제/경영 관련 키워드
+        if (text.matches(".*(경제|경영|투자|재테크|마케팅|비즈니스|창업|부자).*")) {
+            return "경제/경영";
+        }
+
+        // IT/컴퓨터 관련 키워드
+        if (text.matches(".*(프로그래밍|코딩|개발|java|python|javascript|컴퓨터|알고리즘|데이터).*")) {
+            return "IT/컴퓨터";
+        }
+
+        // 역사 관련 키워드
+        if (text.matches(".*(역사|문화|전쟁|세계사|한국사|조선|고려).*")) {
+            return "역사";
+        }
+
+        // 과학 관련 키워드
+        if (text.matches(".*(과학|물리|화학|생물|수학|우주|진화).*")) {
+            return "과학";
+        }
+
+        // 인문 관련 키워드
+        if (text.matches(".*(철학|인문|사상|사회|교양|예술).*")) {
+            return "인문";
+        }
+
+        // 시 관련 키워드
+        if (text.matches(".*(시집|시|poetry|poem).*") && !text.contains("역사") && !text.contains("시대")) {
+            return "시";
+        }
+
+        // 기본값
+        return "기타";
     }
 
     /**
